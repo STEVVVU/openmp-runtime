@@ -67,25 +67,31 @@
     }                                                                          \
   }
 
-#define ForeachIntegerOp(macro, type)                                          \
-  macro(type, Plus, +) macro(type, Minus, -) macro(type, Bitand, &)            \
-      macro(type, BitOr, |) macro(type, BitXor, ^)
+// clang-format off
+#define ForeachIntegerOp(macro, type)           \
+  macro(type, Plus, +)                          \
+  macro(type, Minus, -)                         \
+  macro(type, Bitand, &)                        \
+  macro(type, BitOr, |)                         \
+  macro(type, BitXor, ^)
 
 ForeachIntegerOp(ExpandBuiltInAtomic, uint8_t)
-    ForeachIntegerOp(ExpandBuiltInAtomic, int8_t)
-        ForeachIntegerOp(ExpandBuiltInAtomic, uint16_t)
-            ForeachIntegerOp(ExpandBuiltInAtomic, int16_t)
-                ForeachIntegerOp(ExpandBuiltInAtomic, uint32_t)
-                    ForeachIntegerOp(ExpandBuiltInAtomic, int32_t)
-                        ForeachIntegerOp(ExpandBuiltInAtomic, uint64_t)
-                            ForeachIntegerOp(ExpandBuiltInAtomic, int64_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, int8_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, uint16_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, int16_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, uint32_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, int32_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, uint64_t)
+ForeachIntegerOp(ExpandBuiltInAtomic, int64_t)
 
-#define ForEachFPOp(macro, type, width)                                        \
-  macro(type, width, Plus, +, false) macro(type, width, Minus, -, false)       \
-      macro(type, width, ReversedMinus, -, true)                               \
-          macro(type, width, Times, *, false)                                  \
-              macro(type, width, Divide, /, false)                             \
-                  macro(type, width, ReversedDivide, /, true)
+#define ForEachFPOp(macro, type, width)         \
+  macro(type, width, Plus, +, false)            \
+  macro(type, width, Minus, -, false)           \
+  macro(type, width, ReversedMinus, -, true)    \
+  macro(type, width, Times, *, false)           \
+  macro(type, width, Divide, /, false)          \
+  macro(type, width, ReversedDivide, /, true)
 
-                                ForEachFPOp(ExpandCASAtomic, float, 32)
-                                    ForEachFPOp(ExpandCASAtomic, double, 64)
+ForEachFPOp(ExpandCASAtomic, float, 32)
+ForEachFPOp(ExpandCASAtomic, double, 64)
+// clang-format on

@@ -53,7 +53,7 @@ class eventTracer {
     std::string format() {
       char buffer[512];
 
-      sprintf(&buffer[0], fmt, args[0], args[1], args[2], args[3], args[4],
+      snprintf(&buffer[0], sizeof(buffer), fmt, args[0], args[1], args[2], args[3], args[4],
               args[5], args[6], args[7], args[8], args[9]);
 
       return std::string(&buffer[0]);

@@ -345,7 +345,7 @@ static void printHelp() {
   lomp::errPrintf(
       "The microbenchmark takes two or three arguments:\n"
       "Argument one is a measurement (LILO,LIMO,LIRO,RILO) or 'Test'\n"
-      "Argument two is a barriername or All (ony with Test)\n"
+      "Argument two is a barriername or All (only with Test)\n"
       "Argument three is a number, to run the benchmark only at a specific "
       "number of threads.\n");
   lomp::Barrier::printBarriers();

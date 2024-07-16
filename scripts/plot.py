@@ -914,7 +914,7 @@ def extractSI(s):
     if "[" in s:
         return (s, None)
 
-    types = {"T": "Time", "O": "Rate", "A": "Rate", "s": "Seconds", "%": "Percentage"}
+    types = {"T": "Time", "O": "Rate", "A": "Rate", "s": "Seconds", "S": "Seconds", "%": "Percentage"}
     du = s.split()
     # Preserve integers as such, so that columns like "Threads" generate an X axis "1 2 3",
     # rather than "1.0 2.0 3.0"
@@ -943,7 +943,7 @@ def extractSI(s):
         "z": -1e21,
         "y": -1e24,
     }[units[0] if len(units) == 2 else " "]
-    # print ("units = '" + units + "'" + " factor=" + str(factor))
+    # print ("s: \"" + s + "\" => units = '" + units + "'" + " factor=" + str(factor))
 
     # Minor trickery here is an attempt to preserve accuracy by using a single divide,
     # rather than  multiplying by 1/x, which introduces two roundings since 1/10 is not representable
@@ -1862,7 +1862,7 @@ def generateReport():
                         "relative to P(" + str(threadCount) + ")" + str(threadCount)
                     )
                 generatePlot(
-                    title + " Speedup (" + relativeTitle + ")",
+                    stat + " " + title + " Speedup (" + relativeTitle + ")",
                     "Speedup",
                     threadCounts,
                     speedups,
@@ -1878,9 +1878,11 @@ def generateReport():
                     threadCounts, totalTimes, efficiencyFunctions[metric]
                 )
 
-                maxEfficiency = max([max(efficiencies[k]) for k in efficiencies.keys()])
+                maxEfficiency = 0
+                for values in efficiencies.values():
+                    maxEfficiency = max ([maxEfficiency] + [v for v in values if v != None])
                 generatePlot(
-                    title + " Parallel Efficiency (" + relativeTitle + ")",
+                    stat + " " + title + " Parallel Efficiency (" + relativeTitle + ")",
                     "Efficiency (%)",
                     threadCounts,
                     efficiencies,

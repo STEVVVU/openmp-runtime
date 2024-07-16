@@ -117,7 +117,7 @@ public:
 // This code is intended for the broadcast operation in a barrier,
 // not to wakeup threads which are waiting to claim a lock.
 // For that it would be better to use the std::condition_variable operations.
-// Those are not helpful here, though, bnecause they require that threads acquire
+// Those are not helpful here, though, because they require that threads acquire
 // a lock, which is not what we want (or need) here.
 
 // You sleep in a bed :-)
