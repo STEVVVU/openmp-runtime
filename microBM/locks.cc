@@ -46,8 +46,6 @@ void forceAffinity() {
 void forceAffinity() {}
 #endif
 
-#define MAX_THREADS 256
-
 // A base class so that we can have a simple interface to our timing operations
 // and pass in a specific lock type to use.
 // This does mean that we're doing an indirect call for each operation, but
@@ -160,7 +158,7 @@ public:
 // in <omp.h>, but then not have the function definition in libgomp!
 // Try to hack around that
 static bool hintsIgnored = false;
-#if (0 && __GNUC__)
+#if defined(__GNUC__)
 extern "C" {
 void omp_init_lock_with_hint(omp_lock_t * lock, omp_lock_hint_t)
     __attribute__((weak));
@@ -339,7 +337,7 @@ class MCSLock : public abstractLock {
   };
 
   CACHE_ALIGNED std::atomic<MCSLockEntry *> tail;
-  MCSLockEntry entries[MAX_THREADS];
+  MCSLockEntry entries[LOMP_MAX_THREADS];
 
 public:
   MCSLock() : tail(0) {}
@@ -545,7 +543,7 @@ static void measureOverhead(abstractLock ** l, statistic * summary,
                             int participants) {
   int const numRepeats = 250;
   int const innerReps = 5000;
-  statistic threadStats[MAX_THREADS];
+  statistic threadStats[LOMP_MAX_THREADS];
 
 #pragma omp parallel
   {
@@ -591,7 +589,7 @@ static void measureClumpingN(abstractLock ** l, int nLocks, statistic * summary,
   int lastHeld[MAX_LOCKS];
   for (int i = 0; i < MAX_LOCKS; i++)
     lastHeld[i] = -1;
-  statistic threadStats[MAX_THREADS];
+  statistic threadStats[LOMP_MAX_THREADS];
 
 #pragma omp parallel
   {
@@ -695,7 +693,7 @@ static void measureMap(abstractLock * l, statistic * s, int nThreads,
   int const numRepeats = 25;
   int const innerReps = 1000;
   int const entries = 10000;
-  statistic threadStats[MAX_THREADS];
+  statistic threadStats[LOMP_MAX_THREADS];
 
   for (uint32_t i = 0; i < entries; i++)
     theMap[i] = i * i;
@@ -847,9 +845,9 @@ static abstractLock * createLock(char tag) {
 
 int main(int argc, char ** argv) {
   int nThreads = omp_get_max_threads();
-  if (nThreads > MAX_THREADS) {
-    printf("%d threads available, increase MAX_THREADS (%d)\n", nThreads,
-           MAX_THREADS);
+  if (nThreads > LOMP_MAX_THREADS) {
+    printf("%d threads available, increase LOMP_MAX_THREADS (%d)\n", nThreads,
+           LOMP_MAX_THREADS);
     return 1;
   }
 
@@ -867,7 +865,7 @@ int main(int argc, char ** argv) {
 #pragma omp parallel
   { forceAffinity(); }
 
-  statistic statsValues[MAX_THREADS];
+  statistic statsValues[LOMP_MAX_THREADS];
   statistic * stats;
 
   switch (argv[1][0]) {
