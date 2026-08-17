@@ -32,20 +32,85 @@
 // This is a dubious thing to do; it'd be better to use the functionality
 // of the OpenMP runtime, but this is simple, at least.
 #include <sched.h>
-void forceAffinity() {
-  int me = omp_get_thread_num();
-  cpu_set_t set;
+#include <sstream>
 
-  CPU_ZERO(&set);
-  CPU_SET(me, &set);
-
-  if (sched_setaffinity(0, sizeof(cpu_set_t), &set) != 0)
-    fprintf(stderr, "Failed to force affinity for thread %d\n", me);
-  //  else
-  //    fprintf(stderr,"Thread %d bound to cpuid bit %d\n",me,me);
+static std::string formatMask(cpu_set_t const & mask) {
+  std::stringstream res;
+  
+  // Compress runs
+  int base = -1;
+  int pos;
+  for (pos=0; pos<CPU_SETSIZE; pos++) {
+    if (CPU_ISSET(pos, &mask)) {
+      if (base == -1) {
+        base = pos;
+      }
+    } else {
+      if (base != -1) {
+        // End of a run, but how long is it?
+        // ("That's rather a personal question, Sir" https://montycasinos.com/montypython/scripts/lifeboat.php.html)
+        if (pos == (base+1)) {
+          // A single element
+          res << "," << base;
+        } else {
+          res << "," << base << "-" << pos-1;
+        }
+	base = -1;
+      }
+    }
+  }
+  if (base != -1) {
+    // Finished, but there's a run to print.
+    if (pos == (base+1)) {
+      // A single element
+      res << "," << base;
+    } else {
+      res << "," << base << "-" << pos-1;
+    }
+  }
+  // Slice off the leading "," 
+  return res.str().substr(1);
 }
+
+static void showAffinity() {
+  int me = omp_get_thread_num();
+  cpu_set_t myAffinity;
+  if (sched_getaffinity (0, sizeof(cpu_set_t), &myAffinity) != 0) {
+    fprintf(stderr,"*** sched_getaffinity failed in thread %d ***",me);
+  }
+
+  fprintf (stderr, "Thread %d, affinity: %s\n", me, formatMask(myAffinity).c_str());
+}
+
+
+void forceAffinity(bool verbose=false) {
+  int me = omp_get_thread_num();
+
+  #pragma omp critical
+  {
+    if (verbose) {
+      fprintf(stderr, "Before forcing affinity: ") ;
+      showAffinity();
+    }
+
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(me, &set);
+
+    if (sched_setaffinity(0, sizeof(cpu_set_t), &set) != 0)
+      fprintf(stderr, "Failed to force affinity for thread %d\n", me);
+    //  else
+    //    fprintf(stderr,"Thread %d bound to cpuid bit %d\n",me,me);
+
+    if (verbose) {
+      fprintf(stderr, "After forcing affinity: ") ;
+      showAffinity();
+    }
+  }
+}
+
 #else
-void forceAffinity() {}
+void forceAffinity(bool) {}
 #endif
 
 #define NumSamples 1000
@@ -418,7 +483,7 @@ int main(int argc, char ** argv) {
 
 // Warm up...
 #pragma omp parallel
-  { forceAffinity(); }
+  { forceAffinity(true); }
 
   // Most of the tests are per-thread
   fprintf(stderr, "%s %s\n", argv[0], argv[1]);

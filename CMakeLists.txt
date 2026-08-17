@@ -33,10 +33,10 @@ option(LOMP_BUILD_MICROBM "Build micro-benchmarks" ON)
 option(LOMP_BUILD_EXAMPLES "Build example programs" ON)
 option(LOMP_SERIAL "Build a serial version of the LOMP library" OFF)
 option(LOMP_SHARED_LIB "Build a shared-library version of LOMP" ON)
-set(LOMP_MAX_THREADS "256" CACHE STRING "Maximum number of threads supported by LOMP" )
+set(LOMP_MAX_THREADS "512" CACHE STRING "Maximum number of threads supported by LOMP" )
 
-# Assume aarch64 v8.1a architecture by default.
-set(LOMP_ARM64_ARCHITECTURE "armv8.1a" CACHE STRING "Detailed aarch64 architecture passed to -march=")
+# Assume aarch64 v8.1-a architecture by default.
+set(LOMP_ARM64_ARCHITECTURE "armv8.1-a" CACHE STRING "Detailed aarch64 architecture passed to -march=")
 include(CheckCXXCompilerFlag)
 
 # look for Git

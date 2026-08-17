@@ -96,7 +96,7 @@ typedef enum sched_type : int32_t {
 
      These modifiers can be or-ed into non-static schedules by the compiler to
      pass the additional information. They will be stripped early in the
-     processing in __kmp_dispatch_init when setting up schedules, so most of the
+     processing in __kmpc_dispatch_init when setting up schedules, so most of the
      code won't ever see schedules with these bits set.  */
   kmp_sch_modifier_monotonic =
       (1 << 29), /**< Set if the monotonic schedule modifier was present */

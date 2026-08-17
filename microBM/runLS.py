@@ -17,9 +17,12 @@ runDesc = BMutils.runDescription(
         # "N": ("",),
         # "P": ("ru", "rm", "wu", "wm", "au", "am",
         #       "ru0", "rm0", "wu0", "wm0", "au0", "am0",),
-        "P": ("ru", "ru -1", "rm", "wu", "wu -1", "wm", "au", "au -1","am"),
-        "R": ("a", "w"),
-        "S": ("ru", "rm", "wu", "wm", "au", "am"),
+#        "P": ("ru", "ru -1", "rm", "wu", "wu -1", "wm", "au", "au -1","am"),
+        "P": ("au","am"),
+#        "R": ("a", "w"),
+        "R": ("a", ),
+#        "S": ("ru", "rm", "wu", "wm", "au", "am"),
+        "S": ("au","am"),
         "V": ("",),
     },
     # P,R,S can all take an extra argument to choose the active core, or -1 for all
@@ -38,6 +41,5 @@ runDesc = BMutils.runDescription(
 # None => all :-)
 tests = None
 # Choose a subset of tests to run here.
-tests = ("P",)
-
+tests = ("P","S","R")
 BMutils.runBM(runDesc, tests)

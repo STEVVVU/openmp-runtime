@@ -86,6 +86,7 @@ ThreadTeam::ThreadTeam(int NumThreads)
   // Then spawn the others. This could be done recursively,
   // but there are kernel locks which mean that's probably not worthwhile,
   // and this only happens once at the moment.
+  // 
   ThreadArgs args[NumThreads - 1];
   for (int i = 1; i < NumThreads; i++) {
     args[i - 1] = ThreadArgs(this, i, i, false, 0);
@@ -247,7 +248,7 @@ void InvocationInfo::runLLVM(void * GTid, void * LTid) const {
     RegisterArgs[i + 2] = va_arg(VACopy, void *);
   }
 
-  int StackArgCount = ArgCount - NumRegArgs;
+  int const StackArgCount = ArgCount - NumRegArgs;
   // Here is where we're exploiting implementation behavior
   // which is not mandated by the language standard. We're
   // relying on the fact that many compilers implement the
@@ -339,10 +340,10 @@ void InvocationInfo::runLLVM(void * GTid, void * LTid) const {
 #if (LOMP_GNU_SUPPORT)
 // Invoke the thunk function with GNU-style calling convention.  This is a bit
 // easier than LLVM, as here the thunk arguments are passed as a memory area
-// that is passed through as a pointer argument. So, we need not worry about
+// that is passed through a pointer argument. So, we need not worry about
 // the actual ABI and how many arguments are passed in registers or passed as
-//in-memory arguments.
-void InvocationInfo::runGNU(void * GTid, void * LTid) const {
+// in-memory arguments.
+void InvocationInfo::runGNU(void *, void *) const {
   // Increment the number of executing tasks once, as each thread executes an
   // implicit task for the parallel region.
   auto thread = Thread::getCurrentThread();

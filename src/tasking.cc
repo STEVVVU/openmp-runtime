@@ -504,7 +504,6 @@ void FreeTaskAndAncestors(TaskDescriptor * task) {
 
 void InvokeTask(TaskDescriptor * task) {
   auto * thread = Thread::getCurrentThread();
-  auto * team = thread->getTeam();
   int32_t gtid = 0;
 
   // store the reference to the previously running task
@@ -727,7 +726,7 @@ void TaskExecutionBarrier(bool internalBarrier) {
   auto * thread = Thread::getCurrentThread();
   auto * team = thread->getTeam();
   size_t teamSize = team->getCount();
-  size_t goal = internalBarrier ? teamSize : 0;
+  ssize_t goal = internalBarrier ? teamSize : 0;
 #if DEBUG_TASKING
   printf("thread %d: barrier, start task execution (goal %ld)\n",
          thread->getLocalId(), goal);

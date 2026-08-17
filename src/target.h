@@ -186,7 +186,7 @@ constexpr int int_log2(int n) {
   return n < 2 ? n : 1 + int_log2(n >> 1);
 }
 #ifndef LOMP_MAX_THREADS
-#define LOMP_MAX_THREADS 256
+#define LOMP_MAX_THREADS 512
 #endif // LOMP_MAX_THREADS
 #define LOMP_LN2_MAX_THREADS int_log2(LOMP_MAX_THREADS - 1)
 

@@ -28,7 +28,7 @@ def capture(cmd):
         return subprocess.run(cmd, stdout=subprocess.PIPE,shell=True).stdout.decode("utf-8")
     except:
         return ""
-    
+
 def extractMachineInfo():
     """Try to find out useful information about the machine.
     This seems harder than is reasonable! /proc/cpuinfo on Arm machines
@@ -53,15 +53,9 @@ def extractMachineInfo():
         # modelName = capture("sysctl -n machdep.cpu.brand_string").strip()
         return
 
-
-
     if modelName == "":
         modelName = cpuInfo.getCpuInfo("model name")
 
-    # Linux...
-    # Not as good as sysctl, since it doesn't easily distinguish SMT threads
-    # and "real" CPUs.
-    cores = os.cpu_count()
     # Try to extract more info from lscpu
     lscpu = capture("lscpu")
     threadsPerCore = 0
@@ -70,20 +64,27 @@ def extractMachineInfo():
             threadsPerCore = int(line.split(":")[1])
         if modelName == "" and "Model name:" in line:
             modelName = line.split(":")[1].strip()
+
+    # Linux...
+    # Not as good as sysctl, since it doesn't easily distinguish SMT threads
+    # and "real" CPUs.
+    cores = os.cpu_count()
+
     if threadsPerCore == 0:
         # Dubious in the extreme
         threadsPerCore = {"aarch64" : 4, "x86_64" : 2}[arch]
     cores = cores//threadsPerCore
 
-    # If we can't, then see if it's one of the machines we know about...
+    # If we haven't managed to find it, then see if it's one of the specific machines we know about...
     if modelName == "":
         # Host name to model name. Very installation dependent.
         # Fixes needed here for other environments
         hostName = platform.node().split(".")[0]
-        knownHostTags = { "xcil": "Marvell ThunderX2 ARM v8.1",
-                          "a64fx": "Fujitsu A64FX"}
+        knownHostTags = { "xcil": "Marvell ThunderX2 ARM v8.1",  # Isambard
+                          "a64fx": "Fujitsu A64FX",      
+                          "nid00": "NVidia Grace"}               # Isamabard-AI
         for k in knownHostTags.keys():
-            if hostName in k:
+            if k in hostName:
                 modelName = knownHostTags[k]
                 break
     # Leave the model name blank, so we don't pass the envirable.
@@ -125,7 +126,9 @@ def computeEnv():
     print ("Arch (may be wrong!):", arch,"\nModel:",modelName,"\nCores: ", cores)
     
     env = ("TARGET_MACHINE='" + modelName + "' ") if modelName else ""
-    env += "OMP_NUM_THREADS=" + str(cores)
+    # Add OpenMP standard affinity settings
+    env += "OMP_NUM_THREADS=" + str(cores) + " OMP_PLACES=cores OMP_PROC_BIND=close"
+    # and the LLVM versions too, just in case!
     env += " KMP_HW_SUBSET=1T KMP_AFFINITY='compact,granularity=fine' "
     return env
 
@@ -160,7 +163,7 @@ def runBM(runDesc, tests=None, printOnly=False):
     # print ("tests: ", tests)
     # print ("subOptions: ", subOptions)
 
-    # print(runDesc)
+     # print(runDesc)
     env = computeEnv()
     for test in tests:
         for opt in runDesc.subOptions.get(test, ("",)):
@@ -170,3 +173,8 @@ def runBM(runDesc, tests=None, printOnly=False):
                     outputName(runDesc.outputNamePrefix + test + opt + "_" + extra),
                     printOnly
                 )
+
+if __name__ == "__main__":
+    env = computeEnv();
+    print ("Computed environment: ", env)
+                

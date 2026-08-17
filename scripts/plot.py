@@ -434,7 +434,7 @@ def addLegend(ax, lines, impls, legendPos):
         "upper left",
         "lower right",
         "lower left",
-        "right",
+    #    "right",
         "center right",
         "center left",
         "lower center",
@@ -578,8 +578,10 @@ def generateLabelsTicks(posns):
         return labelsTicks(posns, 1)
     elif len(posns) <= 50:
         return labelsTicks(posns, 5)
-    else:
+    elif len(posns) <= 100:
         return labelsTicks(posns, 10)
+    else:
+        return labelsTicks(posns, 20)
 
 
 def nonesToNans(array):
@@ -662,6 +664,7 @@ def generatePlot(
     legendPos="best",
     sortKeyFn=lambda x: x,
     timeUnit=None,
+    style="line"
 ):
     """Generate a single plot, which has various options.
     The maximum y axis value can be set
@@ -673,7 +676,9 @@ def generatePlot(
     ax = fig.axes[0]
     impls = sorted(list(sizeValues.keys()), key=cmp_to_key(compareFn))
     # print("xmMin = ",xMin)
-    setupXAxis(ax, npl[0] if xMin == None else xMin, npl[-1], xLabel, logarithmic)
+    extraMaxX = 0.5 if style == "bar" else 0
+
+    setupXAxis(ax, npl[0] if xMin == None else xMin, npl[-1]+extraMaxX, xLabel, logarithmic)
 
     if False:
         print("npl: ", npl)
@@ -694,16 +699,21 @@ def generatePlot(
             # print "npl : " + str(npl) + " dataValues: " + str(dataValues)
             nplToUse = npl[: len(dataValues)]
         # print ("impl: ", str(impl), " " + str(dataValues))
-        (line,) = ax.plot(nplToUse, dataValues)
-        lines.append(line)
-        plt.setp(
-            line,
-            marker=implementationStyles[impl][0],
-            markersize=markerSize,
-            color=implementationStyles[impl][1],
-            linestyle=implementationStyles[impl][2],
-        )
-
+        if style == "line":
+            (line,) = ax.plot(nplToUse, dataValues)
+            lines.append(line)
+            plt.setp(
+                line,
+                marker=implementationStyles[impl][0],
+                markersize=markerSize,
+                color=implementationStyles[impl][1],
+                linestyle=implementationStyles[impl][2],
+            )
+        elif style == "bar":
+            line = ax.bar(nplToUse, dataValues)
+        else:
+            print (f"***Unknown plot style {style}***")
+            sys.exit(-1)
         if deviations:
             # ax.errorbar is inconsistent with ax.plot, and doesn't ignore None entries
             # so we have to add the bars one at a time ignoring the Nones ourself
@@ -909,19 +919,10 @@ def plotFit(title, threadCounts, bestTimes, coeffs, independentVar, unit):
 # Code to read the SI formatted data.
 def extractSI(s):
     """Convert a measurement with a range suffix into a suitably scaled value"""
-
-    # If this is representing a range, just return it as is.
-    if "[" in s:
-        return (s, None)
-
-    types = {"T": "Time", "O": "Rate", "A": "Rate", "s": "Seconds", "S": "Seconds", "%": "Percentage"}
+    types = {"T": "Time", "O": "Rate", "A": "Rate", "s": "Seconds", "%": "Percentage", "TEPS" : "Performance"}
     du = s.split()
-    # Preserve integers as such, so that columns like "Threads" generate an X axis "1 2 3",
-    # rather than "1.0 2.0 3.0"
-    num = float(du[0]) if "." in du[0] else int(du[0])
-    units = du[1] if len(du) == 2 else " "
-    if s[-1] == " ":
-        units = units + " "
+    num = float(du[0])
+    units = du[1] if len(du) == 2 else "  "
 
     # http://physics.nist.gov/cuu/Units/prefixes.html
     factor = {
@@ -942,19 +943,19 @@ def extractSI(s):
         "a": -1e18,
         "z": -1e21,
         "y": -1e24,
-    }[units[0] if len(units) == 2 else " "]
-    # print ("s: \"" + s + "\" => units = '" + units + "'" + " factor=" + str(factor))
-
+    }[units[0] if len(units) >= 2 else " "]
+    # print ("units = '" + units + "'" + " factor=" + str(factor))
+    
     # Minor trickery here is an attempt to preserve accuracy by using a single divide,
     # rather than  multiplying by 1/x, which introduces two roundings since 1/10 is not representable
     # perfectly in IEEE floating point.
     # (Not that this really matters, other than for cleanliness, since we're likely reading numbers with
     # at most five decimal digits of precision).
+    unit = types.get(units[1:], "Count")
     return (
         num * factor if factor > 0 else num / -factor,
-        types.get(units[-1], "Count"),
+        unit
     )
-
 
 def readData(f):
     """Load data into a Pandas' data frame, we're not using this yet..."""
@@ -965,7 +966,9 @@ def readData(f):
     while line != "":
         if line[0] != "#":
             fields = line.split(",")
+            # print ("Read line: ", fields)
             data.append((fields[0], [extractSI(v)[0] for v in fields[1:]]))
+            # print ("Appended data: ", data[-1])
         line = f.readline().strip()
     # Man, working out this next incantation out was non-trivial!
     # They really want you to be snarfing data in csv or some other format they understand!
@@ -1078,6 +1081,7 @@ def summarizeResults(results, what, discard=(), minName=None, maxName=None):
     The times per benchmark/thread, and standard deviations per benchmark/thread"""
     #    threadCounts = sorted (transpose(results).keys())
     threadCounts = [t for t in list(transpose(results).keys()) if t not in discard]
+    # print ("threadCounts: ", threadCounts)
     if not isinstance(threadCounts[0], str):
         threadCounts.sort()
 
@@ -1285,7 +1289,7 @@ def readFiltered(f):
 def readExperiment(getLine, desiredFields, minX, maxX):
     """Consume a single experiment from a file.
     That is either the whole file, or the amount up to a
-    #### NEW EXPERIMENT ###
+    ### NEW EXPERIMENT ###
     line
     """
     try:
@@ -1294,6 +1298,8 @@ def readExperiment(getLine, desiredFields, minX, maxX):
         # We're at the end of the file
         return (None, None, None, None)
 
+    print ("Reading experiment:", title)
+    
     l = next(getLine)
     # print ("Title: " + title)
     # print ("l: " + l)
@@ -1317,8 +1323,9 @@ def readExperiment(getLine, desiredFields, minX, maxX):
             data = [data[i] for i in selectedFields]
             # We don't actually have times, but this should still be OK
             (values, units) = list(zip(*[extractSI(x) for x in data]))
+            # print ("values: ", values, " Units: ", units)
         except:
-            print("*** " + line)
+            # print("*** Ignoring " + line)
             continue
         # print "maxX:", maxX, "Values[0] ", values[0]
         if units[0] and (values[0] > maxX or values[0] < minX):
@@ -1386,7 +1393,7 @@ def normalizeResults(results, independentVariable, basis):
 
 
 def highIsBest(metric):
-    return "Highest" if ((metric == "rate") or (metric == "speedup")) else "Lowest"
+    return "Highest" if (metric in ("rate","speedup","Performance")) else "Lowest"
 
 
 def cleanFilename(fname):
@@ -1412,6 +1419,7 @@ def generateReport():
         "Efficiency",
         "Number",
         "Maximum Serial",
+        "Performance"
     )
 
     from optparse import OptionParser
@@ -1548,6 +1556,13 @@ def generateReport():
         default=False,
         help="Plot a heatmap rather than a line graph",
     )
+    options.add_option(
+        "--bar",
+        action="store_true",
+        dest="bar",
+        default=False,
+        help="Plot bars rather than lines",
+    )
 
     (options, args) = options.parse_args()
 
@@ -1557,7 +1572,7 @@ def generateReport():
     wantSpeedups = options.wantSpeedups
     if options.rates:
         metric = "rate"
-        desiredFields = ("Rate", "Rate_SD", "Min", "Max", "Mean", "SD")
+        desiredFields = ("Performance", "Rate", "Rate_SD", "Min", "Max", "Mean", "SD")
 
     if options.clomp:
         metric = "speedup"
@@ -1596,6 +1611,7 @@ def generateReport():
             continue
 
         with open(fname, "r") as f:
+            print ("Reading", fname)
             # Consume all of the  experiments in a file
             getLine = readFiltered(f)
             while True:
@@ -1604,7 +1620,7 @@ def generateReport():
                 )
                 if thisTitle == None:
                     break
-                # print thisTitle, " ", niv, " ", implementation
+                # print ("Title:", thisTitle, " Niv:", niv, " Implementation: ", implementation)
                 if title == None:
                     title = thisTitle
                 elif title != thisTitle:
@@ -1686,6 +1702,7 @@ def generateReport():
             "Efficiency",
             "Number",
             "Maximum Serial",
+            "Performance"
         )
     for stat in stats:
         if stat not in allStats:
@@ -1726,6 +1743,8 @@ def generateReport():
             "Count": ("Count", ""),
             "Rate": ("Ops/T", "T"),
             "Percentage": (stat, "%"),
+            # Dubious special case
+            "Performance": ("Performance","TEPS")
         }[measurement.units[stat]]
         # print("Unit: ", measurement.units[stat], " TimeUnit: ", timeUnit)
 
@@ -1739,6 +1758,8 @@ def generateReport():
 
         if options.dofit:
             linearFit(thisTitle, threadCounts, totalTimes, independentVariable, unit)
+
+        style = "bar" if options.bar else "line"
 
         legendPos = options.legendPos
         yMax = options.maxY
@@ -1773,6 +1794,7 @@ def generateReport():
                 legendPos=legendPos,
                 logarithmic=logarithmicX,
                 timeUnit=timeUnit,
+                style=style
             )
 
             if options.throughput:

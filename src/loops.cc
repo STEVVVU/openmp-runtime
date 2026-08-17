@@ -903,4 +903,11 @@ FOREACH_LOOPTYPE(generateForDynamicFini, 0)
 
 // No need to do anything here. (Though if we were supporting profiling we would have something...)
 void __kmpc_for_static_fini(ident_t *, int32_t) {}
+
+// A new function which has appeared in, at least, LLVM 22.
+// However, the implementation there is exactly this is also empty.
+// We must define it, though, since the compiler now calls it at the end
+// of a dyancmically scheduled loop.
+void __kmpc_dispatch_deinit (ident_t *, int32_t) {}
+
 } // extern "C"

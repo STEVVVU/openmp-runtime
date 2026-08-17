@@ -32,26 +32,93 @@
 // This is a dubious thing to do; it'd be better to use the functionality
 // of the OpenMP runtime, but this is simple, at least.
 #include <sched.h>
-void forceAffinity() {
+#include <sstream>
+
+static std::string formatMask(cpu_set_t const & mask) {
+  std::stringstream res;
+  
+  // Compress runs
+  int base = -1;
+  int pos;
+  for (pos=0; pos<CPU_SETSIZE; pos++) {
+    if (CPU_ISSET(pos, &mask)) {
+      if (base == -1) {
+        base = pos;
+      }
+    } else {
+      if (base != -1) {
+        // End of a run, but how long is it?
+        // ("That's rather a personal question, Sir" https://montycasinos.com/montypython/scripts/lifeboat.php.html)
+        if (pos == (base+1)) {
+          // A single element
+          res << "," << base;
+        } else {
+          res << "," << base << "-" << pos-1;
+        }
+	base = -1;
+      }
+    }
+  }
+  if (base != -1) {
+    // Finished, but there's a run to print.
+    if (pos == (base+1)) {
+      // A single element
+      res << "," << base;
+    } else {
+      res << "," << base << "-" << pos-1;
+    }
+  }
+  // Slice off the leading "," 
+  return res.str().substr(1);
+}
+
+static void showAffinity() {
   int me = omp_get_thread_num();
-  cpu_set_t set;
+  cpu_set_t myAffinity;
+  if (sched_getaffinity (0, sizeof(cpu_set_t), &myAffinity) != 0) {
+    fprintf(stderr,"*** sched_getaffinity failed in thread %d ***",me);
+  }
 
-  CPU_ZERO(&set);
-  CPU_SET(me, &set);
+  fprintf (stderr, "Thread %d, affinity: %s\n", me, formatMask(myAffinity).c_str());
+}
 
-  if (sched_setaffinity(0, sizeof(cpu_set_t), &set) != 0)
-    fprintf(stderr, "Failed to force affinity for thread %d\n", me);
-  //  else
-  //    fprintf(stderr,"Thread %d bound to cpuid bit %d\n",me,me);
+static void forceAffinity(bool verbose=false) {
+  int me = omp_get_thread_num();
+
+  #pragma omp critical
+  {
+    if (verbose) {
+      fprintf(stderr, "Before forcing affinity: ") ;
+      showAffinity();
+    }
+
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(me, &set);
+   
+    if (sched_setaffinity(0, sizeof(cpu_set_t), &set) != 0) {
+      fprintf(stderr, "***Failed to force affinity for thread %d***\n", me);
+      showAffinity();
+      exit(1);
+    }
+    //  else
+    //    fprintf(stderr,"Thread %d bound to cpuid bit %d\n",me,me);
+
+    if (verbose) {
+      fprintf(stderr, "After forcing affinity: ") ;
+      showAffinity();
+    }
+  }
 }
 #else
-void forceAffinity() {}
+void forceAffinity(bool) {}
+static void showAffinity() {}
 #endif
 
 class alignedUint32 {
   CACHE_ALIGNED std::atomic<uint32_t> value;
 
-public:
+ public:
   alignedUint32() : value(0) {}
   // This works OK as long as the whole variable is not removed.
   auto load() const {
@@ -255,10 +322,10 @@ void measureSharingFrom(lomp::statistic * stats, Operation op, bool modified,
         setupOwner,
         nothing
       } whatIDo = logicalPos == 0
-                      ? active
-                      : (logicalPos < sharing
-                             ? setup
-                             : (logicalPos == sharing ? setupOwner : nothing));
+                  ? active
+                  : (logicalPos < sharing
+                     ? setup
+                     : (logicalPos == sharing ? setupOwner : nothing));
 
       for (int i = 0; i < NumSamples; i++) {
 #pragma omp barrier
@@ -359,7 +426,7 @@ void measureRoundtripFrom(lomp::statistic * stats, int source) {
 
   for (int i = 0; i < nThreads; i++)
     stats[i].scaleDown(
-        2 * innerReps); /* We want half ping pong, hence we multiply by 2 */
+      2 * innerReps); /* We want half ping pong, hence we multiply by 2 */
 
   fprintf(stderr, "\n");
 }
@@ -371,7 +438,7 @@ static syncOnlyChannel * allocatePageOfChannels() {
     return 0;
   }
   syncOnlyChannel * page =
-      (syncOnlyChannel *)((space + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+    (syncOnlyChannel *)((space + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
 
   for (int i = 0; i < int(PAGE_SIZE / sizeof(syncOnlyChannel)); i++) {
     page[i].init();
@@ -430,13 +497,13 @@ void measureLinePlacement(lomp::statistic * stats, int otherThread) {
   }
   for (int i = 0; i < numChannels; i++)
     stats[i].scaleDown(
-        2 * innerReps); /* Times two because we want half round-trip time. */
+      2 * innerReps); /* Times two because we want half round-trip time. */
   fprintf(stderr, "\n");
 }
 
 static void delay(uint32_t ticks) {
   lomp::tsc_tick_count end =
-      lomp::tsc_tick_count(lomp::tsc_tick_count::now().getValue() + ticks);
+    lomp::tsc_tick_count(lomp::tsc_tick_count::now().getValue() + ticks);
 
   while (lomp::tsc_tick_count::now().before(end))
     ;
@@ -551,7 +618,7 @@ void measureVisibilityFrom(lomp::statistic * stats, int from) {
         polling,
         nothing
       } whatIDo = logicalPos == 0 ? active
-                                  : (logicalPos <= sharing ? polling : nothing);
+                  : (logicalPos <= sharing ? polling : nothing);
       int64_t myOffset = clockOffset[me];
 
       for (int i = 0; i < NumSamples; i++) {
@@ -572,7 +639,7 @@ void measureVisibilityFrom(lomp::statistic * stats, int from) {
           while (*bl == 0)
             ;
           threadTimes[logicalPos] = lomp::tsc_tick_count(
-              lomp::tsc_tick_count::now().getValue() + myOffset);
+            lomp::tsc_tick_count::now().getValue() + myOffset);
           break;
         case nothing:
           break;
@@ -587,8 +654,8 @@ void measureVisibilityFrom(lomp::statistic * stats, int from) {
           int64_t elapsed = longestInterval(threadTimes, sharing).getValue();
           if (elapsed > 0)
             stats[sharing].addSample(elapsed);
-          break;
         }
+          break;
         case polling:
         case nothing:
           break;
@@ -612,49 +679,49 @@ void measureVisibilityFrom(lomp::statistic * stats, int from) {
 static void printHelp() {
 
   printf(
-      "If there are two arguments, the first determines the test.\n"
-      "It may have up to three letters in it.\n"
-      "The first determines the test being performed, the others the op & the "
-      "state of the line\n"
-      "L            -- Line latency. The half round trip time depending on the "
-      "cache-line used\n"
-      "M            -- Memory:  read/write latencies\n"
-      "N            -- Number of writes timing; time/write if we do N "
-      "consecutive writes\n"
-      "R[aw] [n]    -- Round trip time: half the round trip time using atomic "
-      "                or write from thread n (zero if unspecified)\n"
-      "                If n<0 run all cases\n"
-      "P[rwa][mu][0] [n]  -- Placement: op is read/write/atomic depending on "
-      "second "
-      "letter,\n"
-      "                line state [modified/unmodified] is determined by the "
-      "third\n"
-      "                If the fourth letter is '0' then allocate the "
-      "measurement\n"
-      "                array in thread 0 (default is to allocate in the "
-      "thread\n"
-      "                doing the measurement)\n"
-      "                If a second argument is present measurements are made\n"
-      "                from there; if it is <0 all positions are measured.\n"
-      "S[rwa][mu] [n]  -- Sharing: op is read/write/atomic depending on second "
-      "letter,\n"
-      "                line state [modified/unmodified] is determined by the "
-      "third\n"
-      "                If a second argument is present measurements are made "
-      "from there; if it is <0 all positions are measured.\n"
-      "V [n]           -- Visibility\n"
-      "                If an argument is present measurements are made from "
-      "there;\n"
-      "                if it is <0; all positions are measured.\n"
-      "\n"
-      "In memory we're looking at the time to perform read/write to a line not "
-      "in the cache\n"
-      "In placement we're looking at the performance of the operation when the "
-      "line is in one other cache\n"
-      "which is moved over every other logicalCPU\n"
-      "In sharing we're putting the line into n other caches\n"
-      "In visibility we're looking at the time until the last of n polling "
-      "threads sees a write\n");
+    "If there are two arguments, the first determines the test.\n"
+    "It may have up to three letters in it.\n"
+    "The first determines the test being performed, the others the op & the "
+    "state of the line\n"
+    "L            -- Line latency. The half round trip time depending on the "
+    "cache-line used\n"
+    "M            -- Memory:  read/write latencies\n"
+    "N            -- Number of writes timing; time/write if we do N "
+    "consecutive writes\n"
+    "R[aw] [n]    -- Round trip time: half the round trip time using atomic "
+    "                or write from thread n (zero if unspecified)\n"
+    "                If n<0 run all cases\n"
+    "P[rwa][mu][0] [n]  -- Placement: op is read/write/atomic depending on "
+    "second "
+    "letter,\n"
+    "                line state [modified/unmodified] is determined by the "
+    "third\n"
+    "                If the fourth letter is '0' then allocate the "
+    "measurement\n"
+    "                array in thread 0 (default is to allocate in the "
+    "thread\n"
+    "                doing the measurement)\n"
+    "                If a second argument is present measurements are made\n"
+    "                from there; if it is <0 all positions are measured.\n"
+    "S[rwa][mu] [n]  -- Sharing: op is read/write/atomic depending on second "
+    "letter,\n"
+    "                line state [modified/unmodified] is determined by the "
+    "third\n"
+    "                If a second argument is present measurements are made "
+    "from there; if it is <0 all positions are measured.\n"
+    "V [n]           -- Visibility\n"
+    "                If an argument is present measurements are made from "
+    "there;\n"
+    "                if it is <0; all positions are measured.\n"
+    "\n"
+    "In memory we're looking at the time to perform read/write to a line not "
+    "in the cache\n"
+    "In placement we're looking at the performance of the operation when the "
+    "line is in one other cache\n"
+    "which is moved over every other logicalCPU\n"
+    "In sharing we're putting the line into n other caches\n"
+    "In visibility we're looking at the time until the last of n polling "
+    "threads sees a write\n");
 }
 
 static void printStats(lomp::statistic * stats, int count, int offset = 1) {
@@ -702,11 +769,12 @@ int main(int argc, char ** argv) {
   if (getenv("TARGET_MACHINE"))
     targetName = getenv("TARGET_MACHINE");
 
+  showAffinity();
     // Warm up...
 #pragma omp parallel
-  { forceAffinity(); }
+  { forceAffinity(false); }
 
-  // Allocate the array to measure, *after* we;ve messed with thread affinity.
+  // Allocate the array to measure, *after* we've messed with thread affinity.
   arrayForMeasurement = new alignedUint32[measurementArraySize];
   // Check that alignment is working
   checkCacheAligned(&arrayForMeasurement[0]);
@@ -892,6 +960,7 @@ int main(int argc, char ** argv) {
     }
     else {
       measureFn(stats, op, modified, from, allocateInT0);
+      IdxOffset = (from != 0) ? 0 : 1;
       printf("%s\n"
              "%s, %s, %s, %s, Active %d\n"
              "# %s\n"
@@ -909,7 +978,7 @@ int main(int argc, char ** argv) {
     char const * storeName;
     int from = (argc > 2) ? atoi(argv[2]) : 0;
 
-    IdxOffset = 0;
+    IdxOffset = (from != 0) ? 0 : 1;
     numStats = nThreads;
     void (*measureFn)(lomp::statistic *, int);
     if (argv[1][1] == 'a') {
@@ -965,7 +1034,8 @@ int main(int argc, char ** argv) {
     int from = 0;
     if (argc > 2)
       from = atoi(argv[2]);
-
+    IdxOffset = (from != 0) ? 0 : 1;
+                
     if (from < 0) {
       // Run all of them...
       NumSamples = NumSamples / 4;
@@ -994,7 +1064,6 @@ int main(int argc, char ** argv) {
       return 0;
     }
     else {
-      IdxOffset = 1;
       measureVisibilityFrom(stats, from);
       printf("Visibility\n"
              "From %d, %s\n"
