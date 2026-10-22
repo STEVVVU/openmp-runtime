@@ -3,15 +3,16 @@ name: verify-openmp-runtime
 description: Drive and verify the LOMP compiler ABI runtime on native Linux after changing runtime or scheduling behavior.
 ---
 
-# Verification status: DRAFT
+# Verification status
 
-The first native workflow run exposed four CTest failures; see the maintained
-P26 implementation report and retained evidence for their exact diagnostics.
-The initialization recursion fix, expected unsupported-team-size fixture, and
-long-task timeout adjustment still require a successful hosted rerun.
-`src/target.h` rejects Windows, and this machine has no local Linux runtime
-environment. Do not treat portable arithmetic checks as proof of the LOMP
-runtime.
+The mapped Linux paths passed at product head
+`5b423aacba011d7d1013812d6dfa4dadad617de7` in hosted run
+[39718820166](https://github.com/STEVVVU/openmp-runtime/actions/runs/39718820166).
+All 25 CTest entries, linkage checks, benchmark checksums, and the separate
+injected-failure cleanup verdict passed. Compact evidence is retained in
+`docs/evidence/linux-39718820166/`. Re-drive affected paths after changes.
+`src/target.h` rejects Windows; portable arithmetic checks do not prove this
+runtime on Windows.
 
 ## Launch
 

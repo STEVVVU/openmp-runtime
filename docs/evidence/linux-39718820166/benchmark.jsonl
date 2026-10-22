@@ -1,0 +1,420 @@
+{"elapsed_ns": 605524, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1329826, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16390, 16378]}
+{"elapsed_ns": 598363, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16386, 16382]}
+{"elapsed_ns": 608949, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16373, 16395]}
+{"elapsed_ns": 606916, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1325079, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16373, 16395]}
+{"elapsed_ns": 597672, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16387, 16381]}
+{"elapsed_ns": 611773, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16331, 16437]}
+{"elapsed_ns": 1325090, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 607527, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16379, 16389]}
+{"elapsed_ns": 607717, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16405, 16363]}
+{"elapsed_ns": 596951, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 607297, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 604422, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16378, 16390]}
+{"elapsed_ns": 597491, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1322435, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 608038, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16359, 16409]}
+{"elapsed_ns": 607977, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1326081, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16415, 16353]}
+{"elapsed_ns": 606656, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 597511, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1336617, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16394, 16374]}
+{"elapsed_ns": 597842, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 608829, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 606625, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1341774, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16405, 16363]}
+{"elapsed_ns": 598093, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16386, 16382]}
+{"elapsed_ns": 609379, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 606796, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1327212, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16404, 16364]}
+{"elapsed_ns": 608629, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16359, 16409]}
+{"elapsed_ns": 598453, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16362, 16406]}
+{"elapsed_ns": 1326632, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16378, 16390]}
+{"elapsed_ns": 607366, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 608408, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16365, 16403]}
+{"elapsed_ns": 597481, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 607206, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16378, 16390]}
+{"elapsed_ns": 613937, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16354, 16414]}
+{"elapsed_ns": 597442, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1322456, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16378, 16390]}
+{"elapsed_ns": 608138, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16350, 16418]}
+{"elapsed_ns": 607867, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1327192, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16362, 16406]}
+{"elapsed_ns": 606806, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16387, 16381]}
+{"elapsed_ns": 597672, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1333913, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [16387, 16381]}
+{"elapsed_ns": 597922, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [16375, 16393]}
+{"elapsed_ns": 611753, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [16265, 16503]}
+{"elapsed_ns": 606315, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1342535, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [16406, 16362]}
+{"elapsed_ns": 598714, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [16391, 16377]}
+{"elapsed_ns": 1139800, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [8192, 24576]}
+{"elapsed_ns": 614127, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1331679, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16355, 16413]}
+{"elapsed_ns": 610461, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16295, 16473]}
+{"elapsed_ns": 610301, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16402, 16366]}
+{"elapsed_ns": 1327593, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16387, 16381]}
+{"elapsed_ns": 607797, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16377, 16391]}
+{"elapsed_ns": 601138, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16497, 16271]}
+{"elapsed_ns": 611853, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 597221, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16386, 16382]}
+{"elapsed_ns": 608779, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16375, 16393]}
+{"elapsed_ns": 611683, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1325911, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16380, 16388]}
+{"elapsed_ns": 610591, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 597362, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1332891, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 597772, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [16382, 16386]}
+{"elapsed_ns": 606465, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1323227, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 607677, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16374, 16394]}
+{"elapsed_ns": 599054, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16375, 16393]}
+{"elapsed_ns": 606776, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1356687, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16413, 16355]}
+{"elapsed_ns": 598373, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 611663, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 608018, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1325230, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 609459, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16372, 16396]}
+{"elapsed_ns": 598754, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16417, 16351]}
+{"elapsed_ns": 1400904, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16513, 16255]}
+{"elapsed_ns": 598032, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16375, 16393]}
+{"elapsed_ns": 609680, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16367, 16401]}
+{"elapsed_ns": 597742, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 608007, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16368, 16400]}
+{"elapsed_ns": 612785, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16358, 16410]}
+{"elapsed_ns": 597651, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1335265, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16367, 16401]}
+{"elapsed_ns": 599765, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16395, 16373]}
+{"elapsed_ns": 608308, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1325199, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16386, 16382]}
+{"elapsed_ns": 608207, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16357, 16411]}
+{"elapsed_ns": 606295, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1337198, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16475, 16293]}
+{"elapsed_ns": 597502, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16377, 16391]}
+{"elapsed_ns": 607436, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 605775, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1331229, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 598603, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [16376, 16392]}
+{"elapsed_ns": 609510, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [16446, 16322]}
+{"elapsed_ns": 611332, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1326231, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16366, 16402]}
+{"elapsed_ns": 598002, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16382, 16386]}
+{"elapsed_ns": 609049, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 1328866, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16404, 16364]}
+{"elapsed_ns": 608168, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16404, 16364]}
+{"elapsed_ns": 608668, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16350, 16418]}
+{"elapsed_ns": 602740, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 607206, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16391, 16377]}
+{"elapsed_ns": 610882, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16375, 16393]}
+{"elapsed_ns": 597562, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1328745, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16405, 16363]}
+{"elapsed_ns": 609189, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16406, 16362]}
+{"elapsed_ns": 605814, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1323858, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 608808, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16364, 16404]}
+{"elapsed_ns": 597762, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 1320863, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16370, 16398]}
+{"elapsed_ns": 597651, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16378, 16390]}
+{"elapsed_ns": 608839, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16357, 16411]}
+{"elapsed_ns": 327334, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 795240, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8139, 8173, 8230, 8226]}
+{"elapsed_ns": 322927, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8194, 8207, 8175, 8192]}
+{"elapsed_ns": 332952, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8233, 8142, 8199, 8194]}
+{"elapsed_ns": 321085, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 792215, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8174, 8222, 8231, 8141]}
+{"elapsed_ns": 320905, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8172, 8182, 8206, 8208]}
+{"elapsed_ns": 336708, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8227, 8185, 8204, 8152]}
+{"elapsed_ns": 789481, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8152, 8194, 8209, 8213]}
+{"elapsed_ns": 331190, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8072, 8249, 8226, 8221]}
+{"elapsed_ns": 323628, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8229, 8194, 8158, 8187]}
+{"elapsed_ns": 321425, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 332021, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [7945, 8266, 8285, 8272]}
+{"elapsed_ns": 335045, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [8194, 8210, 8169, 8195]}
+{"elapsed_ns": 321144, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 788770, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [8121, 8191, 8226, 8230]}
+{"elapsed_ns": 324029, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8196, 8165, 8207, 8200]}
+{"elapsed_ns": 331571, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 793798, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8111, 8231, 8204, 8222]}
+{"elapsed_ns": 321214, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8188, 8195, 8194, 8191]}
+{"elapsed_ns": 320464, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 787749, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8108, 8210, 8225, 8225]}
+{"elapsed_ns": 324540, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8186, 8173, 8217, 8192]}
+{"elapsed_ns": 332942, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8194, 8197, 8201, 8176]}
+{"elapsed_ns": 327945, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 786347, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8189, 8188, 8196, 8195]}
+{"elapsed_ns": 323729, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8260, 8009, 8242, 8257]}
+{"elapsed_ns": 341064, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8446, 8452, 8672, 7198]}
+{"elapsed_ns": 319773, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 785195, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8105, 8213, 8233, 8217]}
+{"elapsed_ns": 320854, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8187, 8203, 8178, 8200]}
+{"elapsed_ns": 323378, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8183, 8210, 8182, 8193]}
+{"elapsed_ns": 785315, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8202, 8208, 8173, 8185]}
+{"elapsed_ns": 322227, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8186, 8203, 8187, 8192]}
+{"elapsed_ns": 334054, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8233, 8160, 8202, 8173]}
+{"elapsed_ns": 319703, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 321034, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8177, 8182, 8211, 8198]}
+{"elapsed_ns": 339312, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8238, 8138, 8203, 8189]}
+{"elapsed_ns": 320234, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 784694, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8179, 8184, 8200, 8205]}
+{"elapsed_ns": 322967, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8250, 8197, 8148, 8173]}
+{"elapsed_ns": 329217, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 772506, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8198, 8198, 8188, 8184]}
+{"elapsed_ns": 329507, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8202, 8207, 8184, 8175]}
+{"elapsed_ns": 319702, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 783152, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8189, 8195, 8192]}
+{"elapsed_ns": 324730, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8201, 8221, 8166, 8180]}
+{"elapsed_ns": 332442, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8222, 8195, 8170, 8181]}
+{"elapsed_ns": 328997, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 796843, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8156, 8165, 8219, 8228]}
+{"elapsed_ns": 321254, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8163, 8183, 8212, 8210]}
+{"elapsed_ns": 345571, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8181, 8171, 8168, 8248]}
+{"elapsed_ns": 319062, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 784704, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8220, 8221, 8191, 8136]}
+{"elapsed_ns": 320554, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8201, 8197, 8184, 8186]}
+{"elapsed_ns": 335987, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8201, 8178, 8224, 8165]}
+{"elapsed_ns": 783703, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8193, 8188, 8195, 8192]}
+{"elapsed_ns": 332132, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8179, 8207, 8195, 8187]}
+{"elapsed_ns": 323438, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8267, 8062, 8229, 8210]}
+{"elapsed_ns": 320814, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 332021, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8278, 7982, 8255, 8253]}
+{"elapsed_ns": 324089, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8205, 8182, 8181, 8200]}
+{"elapsed_ns": 319963, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 786046, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8122, 8218, 8215, 8213]}
+{"elapsed_ns": 322948, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8208, 8181, 8209, 8170]}
+{"elapsed_ns": 330559, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 790032, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8193, 8175, 8200, 8200]}
+{"elapsed_ns": 321084, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8185, 8211, 8182, 8190]}
+{"elapsed_ns": 319202, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 782951, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [8182, 8181, 8203, 8202]}
+{"elapsed_ns": 327204, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [7994, 8264, 8247, 8263]}
+{"elapsed_ns": 336688, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [7720, 8474, 8293, 8281]}
+{"elapsed_ns": 330339, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 791224, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8188, 8192, 8194, 8194]}
+{"elapsed_ns": 321245, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8205, 8188, 8193, 8182]}
+{"elapsed_ns": 334715, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8259, 8199, 8146, 8164]}
+{"elapsed_ns": 320924, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 789652, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8138, 8216, 8204, 8210]}
+{"elapsed_ns": 320854, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8206, 8203, 8173, 8186]}
+{"elapsed_ns": 322597, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8189, 8181, 8177, 8221]}
+{"elapsed_ns": 785114, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8198, 8192, 8173, 8205]}
+{"elapsed_ns": 331300, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8227, 8212, 8137]}
+{"elapsed_ns": 333393, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8196, 8192, 8158, 8222]}
+{"elapsed_ns": 320304, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 331671, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8212, 8243, 8307, 8006]}
+{"elapsed_ns": 332171, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8196, 8186, 8212, 8174]}
+{"elapsed_ns": 319722, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 786026, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8162, 8197, 8208, 8201]}
+{"elapsed_ns": 331680, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8148, 8197, 8231]}
+{"elapsed_ns": 330299, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 773548, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8201, 8199, 8175, 8193]}
+{"elapsed_ns": 332111, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8235, 8236, 8212, 8085]}
+{"elapsed_ns": 319913, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 793627, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8197, 8160, 8222, 8189]}
+{"elapsed_ns": 324400, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8162, 8192, 8221, 8193]}
+{"elapsed_ns": 333183, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8236, 8200, 8178, 8154]}
+{"elapsed_ns": 329487, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 791744, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8189, 8205, 8207, 8167]}
+{"elapsed_ns": 322447, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8200, 8186, 8195, 8187]}
+{"elapsed_ns": 344750, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8261, 8193, 8173, 8141]}
+{"elapsed_ns": 319432, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 785396, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8198, 8195, 8183]}
+{"elapsed_ns": 321626, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8172, 8183, 8208, 8205]}
+{"elapsed_ns": 321505, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8210, 8206, 8173, 8179]}
+{"elapsed_ns": 785225, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [8140, 8201, 8214, 8213]}
+{"elapsed_ns": 337038, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [7642, 8405, 8354, 8367]}
+{"elapsed_ns": 326413, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [8197, 8234, 8161, 8176]}
+{"elapsed_ns": 321265, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 1312600, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8671, 7294, 8421, 8382]}
+{"elapsed_ns": 323819, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8211, 8206, 8179, 8172]}
+{"elapsed_ns": 319943, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 788871, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8243, 8250, 8263, 8012]}
+{"elapsed_ns": 322176, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8206, 8168, 8175, 8219]}
+{"elapsed_ns": 346823, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 775430, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8200, 8185, 8184, 8199]}
+{"elapsed_ns": 321165, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8177, 8194, 8198, 8199]}
+{"elapsed_ns": 321035, "iterations": 32768, "schedule": "static", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 782901, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8208, 8205, 8219, 8136]}
+{"elapsed_ns": 320544, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8191, 8210, 8185, 8182]}
+{"elapsed_ns": 334014, "iterations": 32768, "schedule": "fac2", "source_log": "benchmark-lomp-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8241, 8076, 8225, 8226]}
+{"elapsed_ns": 662931, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6009579, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16268, 16500]}
+{"elapsed_ns": 416148, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": -1, "worker_iterations": [16394, 16374]}
+{"elapsed_ns": 441255, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5962076, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16261, 16507]}
+{"elapsed_ns": 414135, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 0, "worker_iterations": [16381, 16387]}
+{"elapsed_ns": 5924450, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16303, 16465]}
+{"elapsed_ns": 414035, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16395, 16373]}
+{"elapsed_ns": 414545, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 415317, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16374, 16394]}
+{"elapsed_ns": 423038, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5901856, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 2, "worker_iterations": [16433, 16335]}
+{"elapsed_ns": 410990, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5880924, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16393, 16375]}
+{"elapsed_ns": 414645, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 3, "worker_iterations": [16383, 16385]}
+{"elapsed_ns": 5880884, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16400, 16368]}
+{"elapsed_ns": 422688, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16394, 16374]}
+{"elapsed_ns": 411330, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-1.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 635083, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6065904, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16578, 16190]}
+{"elapsed_ns": 414595, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": -1, "worker_iterations": [16374, 16394]}
+{"elapsed_ns": 407114, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6019263, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16616, 16152]}
+{"elapsed_ns": 429348, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 0, "worker_iterations": [16588, 16180]}
+{"elapsed_ns": 5918481, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16481, 16287]}
+{"elapsed_ns": 413945, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16396, 16372]}
+{"elapsed_ns": 424671, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 412732, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16392, 16376]}
+{"elapsed_ns": 407475, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5904059, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 2, "worker_iterations": [16442, 16326]}
+{"elapsed_ns": 413915, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5898010, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16434, 16334]}
+{"elapsed_ns": 413804, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 3, "worker_iterations": [16392, 16376]}
+{"elapsed_ns": 6717176, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [18074, 14694]}
+{"elapsed_ns": 488828, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [19209, 13559]}
+{"elapsed_ns": 579404, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-2.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 632234, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6038813, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [16549, 16219]}
+{"elapsed_ns": 417360, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": -1, "worker_iterations": [16359, 16409]}
+{"elapsed_ns": 420264, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6073896, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16658, 16110]}
+{"elapsed_ns": 414255, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 0, "worker_iterations": [16397, 16371]}
+{"elapsed_ns": 6005763, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16704, 16064]}
+{"elapsed_ns": 420073, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16396, 16372]}
+{"elapsed_ns": 407535, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 427185, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16519, 16249]}
+{"elapsed_ns": 420785, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5907034, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 2, "worker_iterations": [16464, 16304]}
+{"elapsed_ns": 408116, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5941536, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [16520, 16248]}
+{"elapsed_ns": 432163, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 3, "worker_iterations": [15974, 16794]}
+{"elapsed_ns": 5902116, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16426, 16342]}
+{"elapsed_ns": 414745, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16385, 16383]}
+{"elapsed_ns": 426263, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-3.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 655088, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6044531, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16157, 16611]}
+{"elapsed_ns": 413855, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": -1, "worker_iterations": [16372, 16396]}
+{"elapsed_ns": 425933, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6022293, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16236, 16532]}
+{"elapsed_ns": 416699, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 0, "worker_iterations": [16345, 16423]}
+{"elapsed_ns": 6032083, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16352, 16416]}
+{"elapsed_ns": 431181, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16480, 16288]}
+{"elapsed_ns": 429237, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 421406, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16697, 16071]}
+{"elapsed_ns": 426453, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5962978, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 2, "worker_iterations": [16423, 16345]}
+{"elapsed_ns": 413484, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6000815, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16544, 16224]}
+{"elapsed_ns": 427205, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 3, "worker_iterations": [16560, 16208]}
+{"elapsed_ns": 5982828, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16432, 16336]}
+{"elapsed_ns": 439584, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16389, 16379]}
+{"elapsed_ns": 427845, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-4.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 983163, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 6192885, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [16025, 16743]}
+{"elapsed_ns": 459714, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": -1, "worker_iterations": [15048, 17720]}
+{"elapsed_ns": 408937, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5973324, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16313, 16455]}
+{"elapsed_ns": 429799, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 0, "worker_iterations": [16430, 16338]}
+{"elapsed_ns": 5987035, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16330, 16438]}
+{"elapsed_ns": 416228, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16374, 16394]}
+{"elapsed_ns": 410460, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 1, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 422347, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16373, 16395]}
+{"elapsed_ns": 407625, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5954235, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 2, "worker_iterations": [16408, 16360]}
+{"elapsed_ns": 425202, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 5957119, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16425, 16343]}
+{"elapsed_ns": 413604, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 3, "worker_iterations": [16392, 16376]}
+{"elapsed_ns": 5962227, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16437, 16331]}
+{"elapsed_ns": 421646, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16391, 16377]}
+{"elapsed_ns": 407675, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-2-5.log", "threads": 2, "trial": 4, "worker_iterations": [16384, 16384]}
+{"elapsed_ns": 607797, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5188048, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8197, 8167, 8209, 8195]}
+{"elapsed_ns": 331941, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": -1, "worker_iterations": [8214, 8181, 8199, 8174]}
+{"elapsed_ns": 321025, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5186787, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8194, 8202, 8181, 8191]}
+{"elapsed_ns": 330348, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 0, "worker_iterations": [8194, 8190, 8201, 8183]}
+{"elapsed_ns": 5144232, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8243, 8134, 8241, 8150]}
+{"elapsed_ns": 334875, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8151, 8227, 8162, 8228]}
+{"elapsed_ns": 336077, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 376258, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [8203, 8192, 8185, 8188]}
+{"elapsed_ns": 331150, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5148068, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 2, "worker_iterations": [8193, 8182, 8199, 8194]}
+{"elapsed_ns": 322156, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5172014, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8283, 8107, 8205, 8173]}
+{"elapsed_ns": 341425, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 3, "worker_iterations": [8208, 8251, 8215, 8094]}
+{"elapsed_ns": 5157914, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8214, 8183, 8200, 8171]}
+{"elapsed_ns": 331770, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8200, 8196, 8199, 8173]}
+{"elapsed_ns": 321104, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-1.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 624588, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5131193, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8188, 8212, 8174, 8194]}
+{"elapsed_ns": 332061, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": -1, "worker_iterations": [8207, 8182, 8211, 8168]}
+{"elapsed_ns": 321135, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5134868, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8200, 8197, 8186, 8185]}
+{"elapsed_ns": 340705, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 0, "worker_iterations": [8200, 8158, 8197, 8213]}
+{"elapsed_ns": 5201409, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8273, 8121, 8196, 8178]}
+{"elapsed_ns": 332812, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8203, 8188, 8197, 8180]}
+{"elapsed_ns": 334285, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 332963, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8243, 8156, 8246, 8123]}
+{"elapsed_ns": 321476, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5089429, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 2, "worker_iterations": [8223, 8187, 8197, 8161]}
+{"elapsed_ns": 335155, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5117282, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8210, 8193, 8188, 8177]}
+{"elapsed_ns": 331921, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 3, "worker_iterations": [8194, 8181, 8198, 8195]}
+{"elapsed_ns": 5095409, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8274, 8128, 8247, 8119]}
+{"elapsed_ns": 343418, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8162, 8269, 8178, 8159]}
+{"elapsed_ns": 321145, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-2.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 611382, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5132906, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8283, 8111, 8302, 8072]}
+{"elapsed_ns": 332111, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": -1, "worker_iterations": [8208, 8190, 8202, 8168]}
+{"elapsed_ns": 336548, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5107897, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8285, 8119, 8298, 8066]}
+{"elapsed_ns": 341675, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 0, "worker_iterations": [8259, 8222, 8094, 8193]}
+{"elapsed_ns": 5138754, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8373, 8051, 8353, 7991]}
+{"elapsed_ns": 331631, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8247, 8140, 8236, 8145]}
+{"elapsed_ns": 320554, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 330218, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8189, 8195, 8185, 8199]}
+{"elapsed_ns": 321255, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5148609, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 2, "worker_iterations": [8336, 8083, 8311, 8038]}
+{"elapsed_ns": 330529, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5126746, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8340, 8073, 8324, 8031]}
+{"elapsed_ns": 330850, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 3, "worker_iterations": [8197, 8183, 8196, 8192]}
+{"elapsed_ns": 5128508, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [8292, 8110, 8282, 8084]}
+{"elapsed_ns": 340664, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [8202, 8185, 8189, 8192]}
+{"elapsed_ns": 321646, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-3.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 610151, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5181388, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8113, 8216, 8150, 8289]}
+{"elapsed_ns": 332251, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": -1, "worker_iterations": [8201, 8183, 8201, 8183]}
+{"elapsed_ns": 320924, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5124914, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8189, 8257, 8049, 8273]}
+{"elapsed_ns": 346253, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 0, "worker_iterations": [8167, 8125, 8251, 8225]}
+{"elapsed_ns": 5134067, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8140, 8233, 8164, 8231]}
+{"elapsed_ns": 332893, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8209, 8181, 8208, 8170]}
+{"elapsed_ns": 340193, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 330369, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8196, 8187, 8196, 8189]}
+{"elapsed_ns": 320914, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5119796, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 2, "worker_iterations": [8173, 8209, 8181, 8205]}
+{"elapsed_ns": 335687, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5165875, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8188, 8132, 8193, 8255]}
+{"elapsed_ns": 330799, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 3, "worker_iterations": [8195, 8189, 8200, 8184]}
+{"elapsed_ns": 5140016, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8178, 8185, 8174, 8231]}
+{"elapsed_ns": 342016, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8041, 8239, 8251, 8237]}
+{"elapsed_ns": 321375, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-4.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 611012, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5227138, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8178, 8177, 8213, 8200]}
+{"elapsed_ns": 331200, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": -1, "worker_iterations": [8202, 8196, 8192, 8178]}
+{"elapsed_ns": 320924, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5173087, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8185, 8207, 8182, 8194]}
+{"elapsed_ns": 332802, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 0, "worker_iterations": [8197, 8190, 8198, 8183]}
+{"elapsed_ns": 5226277, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [8280, 8082, 8262, 8144]}
+{"elapsed_ns": 331431, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [8171, 8205, 8183, 8209]}
+{"elapsed_ns": 336127, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 1, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 330359, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8193, 8198, 8175, 8202]}
+{"elapsed_ns": 323819, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5157733, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 2, "worker_iterations": [8237, 8158, 8214, 8159]}
+{"elapsed_ns": 322567, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8192, 8192, 8192, 8192]}
+{"elapsed_ns": 5120727, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8219, 8177, 8207, 8165]}
+{"elapsed_ns": 330419, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 3, "worker_iterations": [8195, 8189, 8193, 8191]}
+{"elapsed_ns": 5150552, "iterations": 32768, "schedule": "dynamic", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8212, 8169, 8203, 8184]}
+{"elapsed_ns": 332472, "iterations": 32768, "schedule": "guided", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8217, 8186, 8193, 8172]}
+{"elapsed_ns": 321435, "iterations": 32768, "schedule": "static", "source_log": "benchmark-system-4-5.log", "threads": 4, "trial": 4, "worker_iterations": [8192, 8192, 8192, 8192]}

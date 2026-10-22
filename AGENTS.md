@@ -12,8 +12,8 @@ OpenMP compliance.
 - Build with `cmake --build build --parallel` and run the suite with
   `ctest --test-dir build --output-on-failure`.
 - The repository's verification driver and feature map are in
-  `.agents/skills/verify-openmp-runtime/`. Its native runtime checks remain a
-  draft until run on Linux.
+  `.agents/skills/verify-openmp-runtime/`. Its mapped native Linux paths passed
+  in run 39718820166; re-drive affected paths after changes.
 - Keep generated builds and run output outside tracked source. Preserve failed
   test logs and evidence; never label a Windows helper check as runtime proof.
 

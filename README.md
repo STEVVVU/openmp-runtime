@@ -58,8 +58,11 @@ The driver builds the runtime and consumers, runs the complete CTest suite,
 checks that the FAC2 consumer resolves to this build's `libomp`, and compares
 the same irregular loop against the installed Clang runtime. It removes only
 its marked build directory. Configure, build, test, benchmark, and linkage logs
-remain under `artifacts/native-runs/`. The native driver is marked draft until
-the hosted Linux workflow has completed successfully.
+remain under `artifacts/native-runs/`. Native Linux verification passed in
+[run 39718820166](https://github.com/STEVVVU/openmp-runtime/actions/runs/39718820166).
+All 25 CTest entries, actual LOMP/system-library linkage checks, benchmark
+checksums and the injected-failure cleanup control passed. The [retained
+evidence](docs/evidence/linux-39718820166/) includes every measured sample.
 
 The standalone arithmetic check uses only C++17 and can run on Windows. It
 validates FAC2 claim arithmetic, not the OpenMP runtime.

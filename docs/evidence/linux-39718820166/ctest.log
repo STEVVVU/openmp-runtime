@@ -1,0 +1,56 @@
+Internal ctest changing into directory: /home/runner/work/openmp-runtime/openmp-runtime/build/verify-openmp-runtime/39718820166-1
+Test project /home/runner/work/openmp-runtime/openmp-runtime/build/verify-openmp-runtime/39718820166-1
+      Start  1: success
+ 1/25 Test  #1: success ..........................   Passed    0.01 sec
+      Start  2: timer
+ 2/25 Test  #2: timer ............................   Passed    0.02 sec
+      Start  3: fork
+ 3/25 Test  #3: fork .............................   Passed    0.01 sec
+      Start  4: parallel_reduction
+ 4/25 Test  #4: parallel_reduction ...............   Passed    0.02 sec
+      Start  5: nthreads
+ 5/25 Test  #5: nthreads .........................   Passed    0.09 sec
+      Start  6: master1
+ 6/25 Test  #6: master1 ..........................   Passed    0.01 sec
+      Start  7: master2
+ 7/25 Test  #7: master2 ..........................   Passed    0.01 sec
+      Start  8: single
+ 8/25 Test  #8: single ...........................   Passed    0.05 sec
+      Start  9: locks
+ 9/25 Test  #9: locks ............................   Passed    0.18 sec
+      Start 10: critical
+10/25 Test #10: critical .........................   Passed    4.01 sec
+      Start 11: static_scheduling
+11/25 Test #11: static_scheduling ................   Passed    0.01 sec
+      Start 12: scheduling
+12/25 Test #12: scheduling .......................   Passed    0.02 sec
+      Start 13: fac2
+13/25 Test #13: fac2 .............................   Passed    0.01 sec
+      Start 14: fac2_arithmetic
+14/25 Test #14: fac2_arithmetic ..................   Passed    0.01 sec
+      Start 15: fac2_environment
+15/25 Test #15: fac2_environment .................   Passed    0.01 sec
+      Start 16: dynamic_environment
+16/25 Test #16: dynamic_environment ..............   Passed    0.01 sec
+      Start 17: static_environment
+17/25 Test #17: static_environment ...............   Passed    0.01 sec
+      Start 18: for_reduction
+18/25 Test #18: for_reduction ....................   Passed    0.02 sec
+      Start 19: tasks
+19/25 Test #19: tasks ............................   Passed    0.01 sec
+      Start 20: tasks_if0
+20/25 Test #20: tasks_if0 ........................   Passed    0.01 sec
+      Start 21: task_args
+21/25 Test #21: task_args ........................   Passed    0.01 sec
+      Start 22: taskwait
+22/25 Test #22: taskwait .........................   Passed    7.01 sec
+      Start 23: task_forkjoin
+23/25 Test #23: task_forkjoin ....................   Passed   20.01 sec
+      Start 24: task_barrier
+24/25 Test #24: task_barrier .....................   Passed   59.02 sec
+      Start 25: task_single
+25/25 Test #25: task_single ......................   Passed   70.02 sec
+
+100% tests passed, 0 tests failed out of 25
+
+Total Test time (real) = 160.60 sec
