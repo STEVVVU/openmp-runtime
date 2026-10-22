@@ -19,6 +19,8 @@
 #include "fac2.h"
 
 namespace lomp {
+
+class ThreadTeam;
 // If we are ony supporting LLVM, it describes all loops for scheduling in
 // the simple, canonical form
 // for (i = 0; i<=end; i++)
@@ -438,7 +440,7 @@ dynamicLoop::getDispatchFunction<uint64_t>() {
   return dispatchU64;
 }
 // Internal interfaces
-void initializeLoops();
+void initializeLoops(ThreadTeam * team);
 void getScheduleInfo(omp_sched_t * schedp, int * chunkp);
 void setScheduleInfo(omp_sched_t sched, int chunk);
 } // namespace lomp

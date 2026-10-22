@@ -94,7 +94,7 @@ void initializeRuntime() {
   lomp::locks::InitializeLocks();
   // and the loop scheduling parse OMP_SCHEDULE so that schedule(runtime)
   // works.
-  initializeLoops();
+  initializeLoops(team);
 
   // Print LOMP environment if requested via OMP_DISPLAY_ENV
   std::string env;

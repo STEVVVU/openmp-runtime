@@ -8,14 +8,32 @@
 #include <omp.h>
 
 #include <cstdio>
+#include <cstring>
 #include <vector>
 
-int main() {
+int main(int argc, char ** argv) {
+  if (argc != 2) {
+    std::fprintf(stderr, "expected schedule name argument\n");
+    return 2;
+  }
+  omp_sched_t expected;
+  if (std::strcmp(argv[1], "fac2") == 0) {
+    expected = lomp_sched_fac2;
+  } else if (std::strcmp(argv[1], "dynamic") == 0) {
+    expected = omp_sched_dynamic;
+  } else if (std::strcmp(argv[1], "static") == 0) {
+    expected = omp_sched_static;
+  } else {
+    std::fprintf(stderr, "unknown expected schedule: %s\n", argv[1]);
+    return 2;
+  }
+
   omp_sched_t schedule;
   int chunk;
   omp_get_schedule(&schedule, &chunk);
-  if (schedule != lomp_sched_fac2 || chunk != 3) {
-    std::fprintf(stderr, "OMP_SCHEDULE FAC2 selection was not retained\n");
+  if (schedule != expected || chunk != 3) {
+    std::fprintf(stderr, "OMP_SCHEDULE=%s,3 selection was not retained\n",
+                 argv[1]);
     return 1;
   }
   std::vector<int> seen(97, 0);

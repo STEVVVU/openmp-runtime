@@ -5,10 +5,13 @@ description: Drive and verify the LOMP compiler ABI runtime on native Linux afte
 
 # Verification status: DRAFT
 
-This driver has not been exercised on native Linux yet. `src/target.h` rejects
-Windows, and this machine has no local Linux runtime environment. Do not treat
-portable arithmetic checks as proof of the LOMP runtime. The first native run
-must use the repository's pinned GitHub Actions workflow and retain its logs.
+The first native workflow run exposed four CTest failures; see the maintained
+P26 implementation report and retained evidence for their exact diagnostics.
+The initialization recursion fix, expected unsupported-team-size fixture, and
+long-task timeout adjustment still require a successful hosted rerun.
+`src/target.h` rejects Windows, and this machine has no local Linux runtime
+environment. Do not treat portable arithmetic checks as proof of the LOMP
+runtime.
 
 ## Launch
 

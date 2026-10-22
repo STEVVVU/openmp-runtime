@@ -3,7 +3,9 @@
 ## Sub-features
 
 Runtime schedule selection, canonical loop dispatch, guided scheduling, and
-the FAC2 extension through `omp_set_schedule` and `schedule(runtime)`.
+the FAC2 extension through `OMP_SCHEDULE`, `omp_set_schedule`, and
+`schedule(runtime)`. The native environment matrix covers static, dynamic, and
+FAC2 startup selections at a nonzero chunk.
 
 ## How to get to it (user POV)
 

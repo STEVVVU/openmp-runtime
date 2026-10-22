@@ -109,8 +109,8 @@ void getScheduleInfo(omp_sched_t * schedp, int * chunkp) {
   *chunkp = team->getRuntimeLoopChunk();
 }
 
-// Set the scheduling ICVs in the current team.
-void setScheduleInfo(omp_sched_t sched, int chunk) {
+// Set the scheduling ICVs in a team whose lifetime is already established.
+static void setScheduleInfo(ThreadTeam * team, omp_sched_t sched, int chunk) {
   kmp_sched_t internal = internaliseSchedule(sched);
   if (sched == lomp_sched_fac2 && chunk < 1) {
     chunk = 1;
@@ -119,17 +119,20 @@ void setScheduleInfo(omp_sched_t sched, int chunk) {
     internal = kmp_sch_static_chunked;
   }
   // Should this be thread safe? Because this isn't...
-  Thread::getCurrentThread()->getTeam()->setRuntimeSchedule(internal, chunk);
-  // Do this after the getCurrentThread call, since that may be where
-  // the runtime is initialized.
+  team->setRuntimeSchedule(internal, chunk);
   debug(Debug::Loops, "Setting schedule %s, %d", internalName(internal), chunk);
 }
 
+// Set the scheduling ICVs in the current team.
+void setScheduleInfo(omp_sched_t sched, int chunk) {
+  setScheduleInfo(Thread::getCurrentThread()->getTeam(), sched, chunk);
+}
+
 // Read the envirable and parse the result
-void initializeLoops() {
+void initializeLoops(ThreadTeam * team) {
   std::pair<std::string, int> values;
   if (environment::getStringWithIntArgument("OMP_SCHEDULE", values, {"", 0})) {
-    setScheduleInfo(lookupSchedule(values.first), values.second);
+    setScheduleInfo(team, lookupSchedule(values.first), values.second);
   }
 }
 
