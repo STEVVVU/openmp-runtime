@@ -1,19 +1,30 @@
 """Validate retained native rows and summarize five process repeats."""
 import json
 import pathlib
+import re
 import statistics
 import sys
+
+SAMPLE_NAME = re.compile(r'metrics-(balanced|irregular|clustered)-(\d+)-(\d+)-(1|2|4)-([1-5])-(lomp|system)\.log\Z')
 
 
 def summarize(directory):
     groups = {}
     for path in sorted(directory.glob('metrics-*.log')):
-        runtime = path.stem.rsplit('-', 1)[1]
+        match = SAMPLE_NAME.fullmatch(path.name)
+        if match is None:
+            continue
+        kernel, iterations, rounds, workers, repeat, runtime = match.groups()
         rows = [json.loads(line) for line in path.read_text().splitlines()
                 if line.startswith('{')]
         assert rows and rows[0]['schedule'] == 'serial', path
+        schedules = ('static', 'dynamic', 'guided', 'fac2') if runtime == 'lomp' else ('static', 'dynamic', 'guided')
+        assert [(row['schedule'], row['trial']) for row in rows] == [('serial', 0)] + [
+            (schedule, trial) for trial in (-1, 0) for schedule in schedules], path
         expected = rows[0]['checksum']
         for row in rows:
+            assert (row['kernel'], row['iterations'], row['rounds']) == (kernel, int(iterations), int(rounds)), (path, row)
+            assert row['threads'] == (1 if row['schedule'] == 'serial' else int(workers)), (path, row)
             assert row['errors'] == 0 and row['checksum'] == expected, (path, row)
             assert row['elapsed_ns'] > 0, (path, row)
             if 'worker_iterations' in row:
@@ -22,7 +33,7 @@ def summarize(directory):
             if row['trial'] < 0:
                 continue
             key = (runtime, row['kernel'], row['iterations'], row['rounds'],
-                   path.stem.split('-')[-3], row['schedule'])
+                   workers, row['schedule'])
             groups.setdefault(key, []).append(row['elapsed_ns'])
     assert groups, 'no measurements'
     output = []

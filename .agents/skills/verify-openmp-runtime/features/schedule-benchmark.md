@@ -24,6 +24,10 @@ per worker.
 The optional hosted `metrics` input sets `LOMP_METRICS=1` on the same maintained
 driver. It sweeps balanced/irregular/clustered kernels, 262144/1048576 iterations,
 32/256 maximum recurrence rounds and 1/2/4 workers capped at available CPUs.
+The first hosted matrix showed 207 of 324 summary groups below 10ms. A separate
+4096-round confirmation tier at 1048576 iterations preserves the original cells
+and adds longer useful-work samples. It uses the same five alternating process
+pairs; separate clustered profiles also use 4096 rounds.
 Each configuration has five alternating LOMP/LLVM process pairs. Each process
 runs an untimed-output serial control, one schedule warmup (`trial=-1`) and one
 measured trial. Serial rows contain their own elapsed time. Per-worker iteration
