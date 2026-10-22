@@ -1,0 +1,11 @@
+{
+  "run_id": "39729269942-1",
+  "passed": true,
+  "cleanup_succeeded": true,
+  "interrupted": false,
+  "injected_failure": false,
+  "evidence_dir": "/home/runner/work/openmp-runtime/openmp-runtime/artifacts/native-runs/39729269942-1",
+  "source_sha": "88108a219e4ccbea20c591d0ff337acb1cd49826",
+  "validated_measurement_processes": 450,
+  "validated_summary_groups": 405
+}
