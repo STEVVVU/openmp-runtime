@@ -44,6 +44,7 @@ typedef enum omp_sched_t {
   lomp_sched_imbalanced =
       32, // For testing purposes only. Uses static steal scheduling but allocates all the work initially to one thread
   // to force lots of competing stealing to be going on.
+  lomp_sched_fac2 = 33, // Factoring-2 dynamic scheduling extension.
   omp_sched_monotonic = 0x80000000
 } omp_sched_t;
 

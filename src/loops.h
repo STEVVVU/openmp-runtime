@@ -16,6 +16,7 @@
 #define LOOPS_H_INCLUDED
 #include "target.h"
 #include "debug.h"
+#include "fac2.h"
 
 namespace lomp {
 // If we are ony supporting LLVM, it describes all loops for scheduling in
@@ -288,6 +289,7 @@ class dynamicLoop {
 
   // Slight cheat. We just use the widest type for everything.
   std::atomic<uint64_t> nextIteration; /* For monotonic:dynamic and guided. */
+  fac2Scheduler fac2;
   /* For stealing so that one thread can flag everyone when it
    * discovers there's no work  anywhere.
   */
@@ -327,6 +329,9 @@ class dynamicLoop {
                          loopVarType * p_lb, loopVarType * p_ub,
                          loopVarType * p_st);
   template <typename loopVarType>
+  int32_t dispatchFac2(Thread *, int32_t * p_last, loopVarType * p_lb,
+                       loopVarType * p_ub, loopVarType * p_st);
+  template <typename loopVarType>
   int32_t dispatchMonotonic(Thread * myThread, int32_t * p_last,
                             loopVarType * p_lb, loopVarType * p_ub,
                             loopVarType * p_st);
@@ -344,6 +349,9 @@ public:
   }
   void setThreadCount(uint32_t n) {
     threadCount = n;
+  }
+  void resetFac2(uint64_t count, uint64_t minimumChunk, uint32_t workers) {
+    fac2.reset(count, minimumChunk, workers);
   }
 
   // Needs to be a template function since it also assigns teh relevant function pointer.

@@ -52,6 +52,7 @@ static struct {
      omp_sched_t(omp_sched_dynamic | omp_sched_monotonic)},
     // Our debug testing version. Non-monotic, but start with all the work in one place!
     {"imbalanced", kmp_sch_imbalanced, lomp_sched_imbalanced},
+    {"fac2", kmp_sch_fac2, lomp_sched_fac2},
 };
 enum { numSchedules = sizeof(schedules) / sizeof(schedules[0]) };
 
@@ -111,6 +112,9 @@ void getScheduleInfo(omp_sched_t * schedp, int * chunkp) {
 // Set the scheduling ICVs in the current team.
 void setScheduleInfo(omp_sched_t sched, int chunk) {
   kmp_sched_t internal = internaliseSchedule(sched);
+  if (sched == lomp_sched_fac2 && chunk < 1) {
+    chunk = 1;
+  }
   if (internal == kmp_sch_static && chunk != 0) {
     internal = kmp_sch_static_chunked;
   }
@@ -261,7 +265,13 @@ static void computeDynamicLoopParams(ThreadTeam * team, dynamicLoop * theLoop,
 
   // Initialize the canonical, internal, form
   auto cl = theLoop->getCanonicalLoop<loopVarType>();
-  cl->init(lb, ub, incr, chunk);
+  bool isFac2 = SCHEDULE_WITHOUT_MODIFIERS(schedule) == kmp_sch_fac2;
+  if (isFac2 && chunk < 1) {
+    chunk = 1;
+  }
+  cl->init(lb, ub, incr, isFac2 ? loopVarType(1) : chunk);
+  theLoop->resetFac2(cl->getCount(), isFac2 ? uint64_t(chunk) : 1,
+                     threadCount);
   // Remember the current shared state
   *theLoop->getNextIterationPtr() = 0;
 
@@ -520,6 +530,26 @@ int32_t dynamicLoop::dispatchGuided(Thread * myThread, int32_t * p_last,
 }
 
 template <typename loopVarType>
+int32_t dynamicLoop::dispatchFac2(Thread *, int32_t * p_last,
+                                  loopVarType * p_lb, loopVarType * p_ub,
+                                  loopVarType * p_st) {
+  uint64_t begin;
+  uint64_t count;
+  if (!fac2.next(&begin, &count)) {
+    return false;
+  }
+  auto cl = getCanonicalLoop<loopVarType>();
+  auto lastIteration = begin + count - 1;
+  *p_lb = cl->getChunkLower(begin);
+  *p_ub = cl->getChunkUpper(lastIteration);
+  *p_st = cl->getStride(begin, lastIteration);
+  if (p_last) {
+    *p_last = cl->isLastChunk(lastIteration);
+  }
+  return true;
+}
+
+template <typename loopVarType>
 int32_t dynamicLoop::dispatchMonotonic(Thread *, int32_t * p_last,
                                        loopVarType * p_lb, loopVarType * p_ub,
                                        loopVarType * p_st) {
@@ -696,6 +726,9 @@ void dynamicLoop::setSchedule(int32_t sched) {
   case kmp_sch_guided_chunked | kmp_sch_modifier_monotonic:
   case kmp_sch_guided_chunked | kmp_sch_modifier_nonmonotonic:
     setDispatchFunction(&dynamicLoop::dispatchGuided<loopVarType>);
+    break;
+  case kmp_sch_fac2:
+    setDispatchFunction(&dynamicLoop::dispatchFac2<loopVarType>);
     break;
   case kmp_sch_dynamic_chunked:
   case kmp_sch_dynamic_chunked | kmp_sch_modifier_monotonic:

@@ -80,6 +80,7 @@ typedef enum sched_type : int32_t {
   kmp_sch_guided_chunked = 36, /**< guided unspecialized */
   kmp_sch_runtime = 37,        /**< runtime */
   kmp_sch_auto = 38,           /**< auto */
+  kmp_sch_fac2 = 39,           /**< LOMP factoring-2 extension */
   kmp_sch_imbalanced =
       256, /**< for testing purposes, static steal but with completely imbalanced
                                initial allocation to exercise stealing. */
