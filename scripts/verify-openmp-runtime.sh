@@ -66,6 +66,36 @@ drive() {
   done
 }
 
+metrics() {
+  run_step environment bash -c 'git rev-parse HEAD; uname -a; lscpu; free -b; df -B1 .; uptime; clang-18 --version' || return $?
+  test "$(df -Pk "$root" | awk 'NR==2 {print $4}')" -ge 10485760 || return 2
+  for kernel in balanced irregular clustered; do
+    for count in 262144 1048576; do
+      for rounds in 32 256; do
+        for workers in 1 2 4; do
+          (( workers <= $(nproc) )) || continue
+          for repeat in 1 2 3 4 5; do
+            local order="lomp system"
+            (( repeat % 2 == 0 )) && order="system lomp"
+            for runtime in $order; do
+              local binary="$build/tests/fac2_benchmark" extra=()
+              if [[ $runtime == system ]]; then binary="$build/system-fac2-benchmark"; extra=(--standard-only); fi
+              run_step "metrics-$kernel-$count-$rounds-$workers-$repeat-$runtime" \
+                timeout 120 /usr/bin/time -v "$binary" "$workers" 1 "${extra[@]}" \
+                --kernel "$kernel" --iterations "$count" --rounds "$rounds" || return $?
+            done
+          done
+        done
+      done
+    done
+  done
+  run_step metrics-validation python3 "$root/scripts/summarize-metrics.py" "$evidence" || return $?
+  run_step profile-lomp timeout 120 strace -f -c "$build/tests/fac2_benchmark" \
+    2 1 --kernel clustered --iterations 1048576 --rounds 256 || return $?
+  run_step profile-system timeout 120 strace -f -c "$build/system-fac2-benchmark" \
+    2 1 --standard-only --kernel clustered --iterations 1048576 --rounds 256
+}
+
 capture() {
   run_step consumer-linkage ldd "$build/tests/test_fac2" || return $?
   grep -F "$build/src/" "$evidence/consumer-linkage.log" >/dev/null || return $?
@@ -120,6 +150,7 @@ run_all() {
   trap 'handle_signal TERM' TERM
   local status=0
   launch && doctor && drive && capture || status=$?
+  if [[ $status -eq 0 && ${LOMP_METRICS:-0} == 1 ]]; then metrics || status=$?; fi
   finalize "$status" false false
 }
 

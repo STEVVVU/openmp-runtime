@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      metrics:
+        description: Run the frozen native performance matrix
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -17,11 +22,12 @@ jobs:
       - name: Install native build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes clang-18 libomp-18-dev ninja-build
+          sudo apt-get install --yes clang-18 libomp-18-dev ninja-build strace
       - name: Build, drive, capture linkage, and clean owned build
         run: bash scripts/verify-openmp-runtime.sh all
         env:
           LOMP_VERIFY_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          LOMP_METRICS: ${{ inputs.metrics && '1' || '0' }}
       - name: Verify failed-run cleanup and evidence retention
         shell: bash
         run: |

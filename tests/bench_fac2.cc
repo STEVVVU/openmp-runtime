@@ -18,7 +18,22 @@
 
 namespace {
 constexpr int Iterations = 32768;
-constexpr int MinimumTrials = 5;
+constexpr int MinimumTrials = 1;
+int iterations = Iterations;
+int rounds = 64;
+char const * kernel = "irregular";
+
+int cost(int index) {
+  if (std::strcmp(kernel, "balanced") == 0) return rounds;
+  if (std::strcmp(kernel, "clustered") == 0)
+    return index < iterations / 8 ? rounds : 1;
+  return 1 + (uint32_t(index) * 17 + 31) % rounds;
+}
+
+struct alignas(64) workerCount {
+  uint64_t iterations = 0;
+  uint64_t work = 0;
+};
 
 struct scheduleCase {
   char const * name;
@@ -28,8 +43,8 @@ struct scheduleCase {
 
 uint64_t work(int index) {
   uint64_t value = uint64_t(index) + 1;
-  uint32_t rounds = 8 + (uint32_t(index) * 17 + 31) % 57;
-  for (uint32_t i = 0; i < rounds; ++i) {
+  int count = cost(index);
+  for (int i = 0; i < count; ++i) {
     value = value * 6364136223846793005ULL + 1442695040888963407ULL;
   }
   return value;
@@ -37,8 +52,8 @@ uint64_t work(int index) {
 
 bool run(scheduleCase const & selected, int workers, int trial,
          std::vector<uint64_t> const & expected) {
-  std::vector<uint64_t> output(Iterations, 0);
-  std::vector<uint64_t> workerIterations(workers, 0);
+  std::vector<uint64_t> output(iterations, 0);
+  std::vector<workerCount> counts(workers);
   int actualWorkers = 0;
   omp_set_schedule(selected.schedule, selected.chunk);
   auto start = std::chrono::steady_clock::now();
@@ -49,16 +64,19 @@ bool run(scheduleCase const & selected, int workers, int trial,
       actualWorkers = omp_get_num_threads();
     }
 #pragma omp for schedule(runtime)
-    for (int i = 0; i < Iterations; ++i) {
+    for (int i = 0; i < iterations; ++i) {
       output[i] = work(i);
-      ++workerIterations[thread];
+      ++counts[thread].iterations;
+      counts[thread].work += cost(i);
     }
   }
   auto end = std::chrono::steady_clock::now();
 
   if (actualWorkers != workers || output != expected ||
-      std::accumulate(workerIterations.begin(), workerIterations.end(),
-                      uint64_t(0)) != Iterations) {
+      std::accumulate(counts.begin(), counts.end(), uint64_t(0),
+                      [](uint64_t sum, workerCount const & c) {
+                        return sum + c.iterations;
+                      }) != uint64_t(iterations)) {
     std::fprintf(stderr, "correctness or team-size check failed for %s\n",
                  selected.name);
     return false;
@@ -66,30 +84,44 @@ bool run(scheduleCase const & selected, int workers, int trial,
   auto elapsed =
       std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   std::printf("{\"trial\":%d,\"schedule\":\"%s\",\"threads\":%d,"
-              "\"elapsed_ns\":%lld,\"iterations\":%d,"
+              "\"elapsed_ns\":%lld,\"iterations\":%d,\"kernel\":\"%s\","
+              "\"rounds\":%d,\"errors\":0,\"checksum\":%llu,"
               "\"worker_iterations\":[",
               trial, selected.name, workers, static_cast<long long>(elapsed),
-              Iterations);
+              iterations, kernel, rounds,
+              static_cast<unsigned long long>(std::accumulate(output.begin(), output.end(), uint64_t(0))));
   for (int i = 0; i < workers; ++i) {
     std::printf("%s%llu", i ? "," : "",
-                static_cast<unsigned long long>(workerIterations[i]));
+                static_cast<unsigned long long>(counts[i].iterations));
   }
+  std::printf("],\"worker_work\":[");
+  for (int i = 0; i < workers; ++i)
+    std::printf("%s%llu", i ? "," : "", static_cast<unsigned long long>(counts[i].work));
   std::puts("]}");
   return true;
 }
 } // namespace
 
 int main(int argc, char ** argv) {
-  if (argc < 3 || argc > 4) {
+  if (argc < 3) {
     std::fprintf(stderr,
-                 "usage: %s <threads:2|4> <trials:5+> [--standard-only]\n",
+                 "usage: %s <threads:1..64> <trials:5+> [--standard-only] [--kernel balanced|irregular|clustered] [--iterations N] [--rounds N]\n",
                  argv[0]);
     return 2;
   }
   int workers = std::atoi(argv[1]);
   int trials = std::atoi(argv[2]);
-  if ((workers != 2 && workers != 4) || trials < MinimumTrials ||
-      (argc == 4 && std::strcmp(argv[3], "--standard-only") != 0)) {
+  bool standardOnly = false;
+  for (int i = 3; i < argc; ++i) {
+    if (std::strcmp(argv[i], "--standard-only") == 0) standardOnly = true;
+    else if (i + 1 < argc && std::strcmp(argv[i], "--kernel") == 0) kernel = argv[++i];
+    else if (i + 1 < argc && std::strcmp(argv[i], "--iterations") == 0) iterations = std::atoi(argv[++i]);
+    else if (i + 1 < argc && std::strcmp(argv[i], "--rounds") == 0) rounds = std::atoi(argv[++i]);
+    else return 2;
+  }
+  if (workers < 1 || workers > 64 || trials < MinimumTrials || trials > 100 ||
+      iterations < 1 || iterations > 4194304 || rounds < 1 || rounds > 4096 ||
+      (std::strcmp(kernel, "balanced") && std::strcmp(kernel, "irregular") && std::strcmp(kernel, "clustered"))) {
     std::fprintf(stderr, "invalid benchmark arguments\n");
     return 2;
   }
@@ -98,11 +130,17 @@ int main(int argc, char ** argv) {
                               {"dynamic", omp_sched_dynamic, 1},
                               {"guided", omp_sched_guided, 1},
                               {"fac2", lomp_sched_fac2, 1}};
-  size_t scheduleCount = argc == 4 ? 3 : 4;
-  std::vector<uint64_t> expected(Iterations);
-  for (int i = 0; i < Iterations; ++i) {
+  size_t scheduleCount = standardOnly ? 3 : 4;
+  std::vector<uint64_t> expected(iterations);
+  auto serialStart = std::chrono::steady_clock::now();
+  for (int i = 0; i < iterations; ++i) {
     expected[i] = work(i);
   }
+  auto serialNs = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      std::chrono::steady_clock::now() - serialStart).count();
+  std::printf("{\"schedule\":\"serial\",\"threads\":1,\"trial\":0,\"kernel\":\"%s\",\"iterations\":%d,\"rounds\":%d,\"elapsed_ns\":%lld,\"errors\":0,\"checksum\":%llu}\n",
+      kernel, iterations, rounds, static_cast<long long>(serialNs),
+      static_cast<unsigned long long>(std::accumulate(expected.begin(), expected.end(), uint64_t(0))));
   omp_set_num_threads(workers);
 
   for (size_t i = 0; i < scheduleCount; ++i) {
