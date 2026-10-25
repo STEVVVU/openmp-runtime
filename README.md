@@ -10,16 +10,42 @@ static/dynamic/guided schedules, synchronization, reductions, and tasks. The
 upstream README is preserved in [`README.upstream.md`](README.upstream.md), and
 the upstream license and source history remain in the repository.
 
-## Guide
-
-[Implementation techniques](#implementation-techniques) ·
-[Architecture and execution guide](#architecture-and-execution-guide) · [FAC2 schedule](#fac2-schedule) · [Build and verify](#build-and-verify) · [Native measurements](#native-measurements) · [Scope and limitations](#scope-and-limitations) · [Coursework and research](#coursework-and-research)
-
 ## Architecture and execution guide
+
+### Subsystem map
+
+Select a subsystem in the diagram to open its techniques, tradeoffs, and code references. The numbered links provide the same navigation. This map groups components; the execution diagrams show their runtime flow.
+
+```mermaid
+flowchart LR
+  system["OpenMP runtime"]
+  system --> s1["1. Compiler ABI and parallel team"]
+  click s1 href "https://github.com/STEVVVU/openmp-runtime#subsystem-compiler-abi-and-parallel-team" "Explore Compiler ABI and parallel team" _top
+  system --> s2["2. Runtime schedule configuration"]
+  click s2 href "https://github.com/STEVVVU/openmp-runtime#subsystem-runtime-schedule-configuration" "Explore Runtime schedule configuration" _top
+  system --> s3["3. Static worksharing"]
+  click s3 href "https://github.com/STEVVVU/openmp-runtime#subsystem-static-worksharing" "Explore Static worksharing" _top
+  system --> s4["4. Dynamic worksharing"]
+  click s4 href "https://github.com/STEVVVU/openmp-runtime#subsystem-dynamic-worksharing" "Explore Dynamic worksharing" _top
+  system --> s5["5. FAC2 correctness consumer"]
+  click s5 href "https://github.com/STEVVVU/openmp-runtime#subsystem-fac2-correctness-consumer" "Explore FAC2 correctness consumer" _top
+  system --> s6["6. Team synchronization and<br/>reduction"]
+  click s6 href "https://github.com/STEVVVU/openmp-runtime#subsystem-team-synchronization-and-reduction" "Explore Team synchronization and reduction" _top
+```
+
+1. [Compiler ABI and parallel team](#subsystem-compiler-abi-and-parallel-team)
+2. [Runtime schedule configuration](#subsystem-runtime-schedule-configuration)
+3. [Static worksharing](#subsystem-static-worksharing)
+4. [Dynamic worksharing](#subsystem-dynamic-worksharing)
+5. [FAC2 correctness consumer](#subsystem-fac2-correctness-consumer)
+6. [Team synchronization and reduction](#subsystem-team-synchronization-and-reduction)
 
 LOMP implements a compiler-facing subset of the LLVM OpenMP runtime ABI. The inherited runtime supplies teams, synchronization, tasks, reductions and ordinary loop schedules. This repository adds [FAC2](#fac2-batch) through the existing [runtime-schedule](#runtime-schedule) path. It does not claim complete OpenMP compliance.
 
 The compiler calls exported [ABI](#compiler-abi) entry points. Team state selects the runtime schedule, and a [loop descriptor](#loop-descriptor) tracks iteration claims. FAC2's descriptor-local state batches claims, while other schedules keep their existing implementation.
+
+<details>
+<summary>Expand flow diagram 1</summary>
 
 ```mermaid
 flowchart LR
@@ -29,7 +55,12 @@ flowchart LR
   N4["Worker team and loop descriptor"] --> N5["Loop iterations and synchronization"]
 ```
 
+</details>
+
 Caption: a compiled consumer enters LOMP through the ABI, which distributes work to its worker team.
+
+<details>
+<summary>Expand flow diagram 2</summary>
 
 ```mermaid
 flowchart TD
@@ -46,6 +77,8 @@ flowchart TD
   end
   N2["Team runtime schedule"] --> N4["Loop descriptor"]
 ```
+
+</details>
 
 Caption: setup stores schedule choice on the team; dispatch uses that choice and returns claimed iterations. FAC2 recalculates its chunk after each batch.
 
@@ -115,6 +148,395 @@ A `nowait` loop omits the usual end-of-loop barrier, allowing workers to continu
 
 The parser maps recognized schedule names to internal policies. When `OMP_SCHEDULE` names an unknown policy, `src/loops.cc` warns and selects static scheduling instead of failing program startup.
 </details>
+
+## Implementation techniques
+
+This section covers active FAC2 scheduling and the inherited runtime paths it uses. The implementation and rationale link above remain authoritative for broader runtime scope.
+
+<details>
+<summary>Full technique index</summary>
+
+| Subsystem | Technique cards | Source |
+| --- | --- | --- |
+| Compiler ABI and parallel team | [compiler ABI dispatch](#technique-compiler-abi-dispatch), [persistent worker team](#technique-persistent-worker-team) | [`src/interface.h`](src/interface.h), [`src/entrypoints.cc`](src/entrypoints.cc), [`src/threads.cc`](src/threads.cc), [`src/threads.h`](src/threads.h) |
+| Runtime schedule configuration | [team-scoped schedule selection](#technique-team-runtime-schedule), [environment parsing and fallback](#technique-schedule-environment-fallback) | [`src/globals.cc`](src/globals.cc), [`src/loops.cc`](src/loops.cc), [`src/environment.cc`](src/environment.cc) |
+| Static worksharing | [blocked and cyclic partitions](#technique-static-block-cyclic-partition) | [`src/loops.cc`](src/loops.cc), [`src/loops.h`](src/loops.h) |
+| Dynamic worksharing | [dynamic atomic claims](#technique-dynamic-atomic-claims), [guided claims](#technique-guided-claims), [nonmonotonic work stealing](#technique-nonmonotonic-work-stealing), [FAC2 batch claims](#technique-fac2-batch-claims), [FAC2 mutex claims](#technique-fac2-serialized-claims), [descriptor-local lifecycle](#technique-descriptor-local-lifecycle) | [`src/loops.cc`](src/loops.cc), [`src/loops.h`](src/loops.h), [`src/fac2.h`](src/fac2.h), [`src/threads.h`](src/threads.h) |
+| Team synchronization and reduction | [Tree check-in and flag broadcast](#technique-tree-checkin-flag-broadcast), [Atomic or critical reduction](#technique-compiler-selected-reduction) | [`src/threads.cc`](src/threads.cc), [`src/barrier_impl.cc`](src/barrier_impl.cc), [`src/locks.cc`](src/locks.cc) |
+| FAC2 correctness consumer | [exact-coverage checks](#technique-fac2-exact-coverage-checks) | [`tests/test_fac2.cc`](tests/test_fac2.cc) |
+
+</details>
+
+The table covers the active compiler dispatch and worksharing paths in this repository, plus the mapped FAC2 correctness consumer. It excludes preserved examples and unrelated runtime subsystems.
+
+<a id="subsystem-compiler-abi-and-parallel-team"></a>
+
+### 1. Compiler ABI and parallel team
+
+[Back to the subsystem map](#architecture-and-execution-guide).
+
+**Code.** [`src/entrypoints.cc`](src/entrypoints.cc), [`src/interface.h`](src/interface.h), [`src/threads.cc`](src/threads.cc), [`src/threads.h`](src/threads.h).
+
+**Techniques.** [Compiler ABI dispatch](#technique-compiler-abi-dispatch), [Persistent worker team and fork barrier](#technique-persistent-worker-team).
+
+**Related concepts.** [compiler ABI](#compiler-abi), [loop descriptor](#loop-descriptor).
+
+<a id="technique-compiler-abi-dispatch"></a>
+
+<details>
+<summary>Compiler ABI dispatch</summary>
+
+**Mechanism.** Clang calls LLVM-compatible symbols such as `__kmpc_fork_call` and width-specific `__kmpc_dispatch_init_*` and `__kmpc_dispatch_next_*`. The runtime initializes the loop descriptor once, stores a schedule-specific member-function pointer, and invokes that function for each claim. This keeps loop policy behind the compiler ABI.
+
+**Example.** A compiler-generated runtime-scheduled loop enters through `__kmpc_dispatch_init_4`, requests bounds through `__kmpc_dispatch_next_4`, then lets the runtime mark the thread done when no range remains.
+
+**Why here.** FAC2 plugs into the existing dispatch entry points, so consumers can select it through `schedule(runtime)` without a new compiler interface.
+
+**Tradeoffs.** The runtime must match the compiler's symbol names, data widths, and calling conventions. This ABI subset does not imply full OpenMP support.
+
+**Code and ownership.** [`src/interface.h`](src/interface.h#L123) declares the fork entry point. [`src/entrypoints.cc`](src/entrypoints.cc#L119) handles parallel entry; [`src/loops.cc`](src/loops.cc#L890) expands the dispatch wrappers. Inherited.
+
+
+
+**Used in.** [Compiler ABI and parallel team](#subsystem-compiler-abi-and-parallel-team). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-persistent-worker-team"></a>
+
+<details>
+<summary>Persistent worker team and fork barrier</summary>
+
+**Mechanism.** `ThreadTeam` creates the requested workers once. Each worker's `outerLoop` checks out work at the team's barrier, runs the invocation, checks in, and waits for another fork. `__kmpc_fork_call` wakes the barrier, runs the same invocation on the master thread, then checks in and leaves the parallel region.
+
+**Example.** `__kmpc_fork_call` marks the team active, publishes an invocation through the barrier, and later waits for workers to finish before returning to serial execution.
+
+**Why here.** The loop scheduler can hand claims to established team members without creating operating-system threads for every parallel region.
+
+**Tradeoffs.** Workers remain alive and team size cannot change inside a parallel region. LOMP rejects nested parallelism and does not implement general team resizing.
+
+**Code and ownership.** [`src/threads.cc`](src/threads.cc#L57) constructs a team and [`src/threads.cc`](src/threads.cc#L169) runs workers; [`src/entrypoints.cc`](src/entrypoints.cc#L149) wakes the barrier and [`src/entrypoints.cc`](src/entrypoints.cc#L155) checks in the master. Inherited.
+
+
+
+**Used in.** [Compiler ABI and parallel team](#subsystem-compiler-abi-and-parallel-team). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="subsystem-runtime-schedule-configuration"></a>
+
+### 2. Runtime schedule configuration
+
+[Back to the subsystem map](#architecture-and-execution-guide).
+
+**Code.** [`src/globals.cc`](src/globals.cc), [`src/entrypoints.cc`](src/entrypoints.cc), [`src/threads.h`](src/threads.h), [`src/loops.cc`](src/loops.cc), [`src/environment.cc`](src/environment.cc).
+
+**Techniques.** [Team-scoped runtime schedule selection](#technique-team-runtime-schedule), [Environment schedule parsing and fallback](#technique-schedule-environment-fallback).
+
+**Related concepts.** [runtime schedule](#runtime-schedule).
+
+<a id="technique-team-runtime-schedule"></a>
+
+<details>
+<summary>Team-scoped runtime schedule selection</summary>
+
+**Mechanism.** The team stores a runtime schedule and chunk. `OMP_SCHEDULE` initializes those fields when the runtime starts; `omp_set_schedule` updates them through the same setter. At loop initialization, `computeDynamicLoopParams` replaces `schedule(runtime)` with the team's concrete policy and chunk before selecting dispatch.
+
+**Example.** `omp_set_schedule(omp_sched_dynamic, 4)` makes later `schedule(runtime)` loops use dynamic four-iteration chunks in that team.
+
+**Why here.** One team-owned setting connects the environment and public API to the compiler's runtime schedule path.
+
+**Tradeoffs.** The setter is explicitly documented as not thread-safe. A change affects subsequent loop initialization, not a descriptor that already captured its schedule.
+
+**Code and ownership.** [`src/threads.h`](src/threads.h#L128) stores the values; [`src/loops.cc`](src/loops.cc#L113) sets them and [`src/loops.cc`](src/loops.cc#L233) resolves them. Inherited.
+
+
+
+**Used in.** [Runtime schedule configuration](#subsystem-runtime-schedule-configuration). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-schedule-environment-fallback"></a>
+
+<details>
+<summary>Environment schedule parsing and fallback</summary>
+
+**Mechanism.** `OMP_SCHEDULE` is split at its comma into a schedule name and integer chunk. `lookupSchedule` maps recognized names to ABI schedule values. An unknown name warns and becomes static; a chunk conversion failure leaves the team at its initial static default because `initializeLoops` applies the setting only after successful conversion.
+
+**Example.** `OMP_SCHEDULE=fac2,4` selects FAC2 with chunk 4. `OMP_SCHEDULE=unknown,4` warns and selects static with chunk 4.
+
+**Why here.** The runtime accepts both startup configuration and the public schedule API, while an unknown environment schedule does not prevent runtime initialization.
+
+**Tradeoffs.** The parser handles one comma-separated integer argument and does not implement the full OpenMP environment grammar. `std::stoi` may accept a numeric prefix before trailing characters.
+
+**Code and ownership.** [`src/environment.cc`](src/environment.cc#L69) parses the pair; [`src/loops.cc`](src/loops.cc#L59) maps names and [`src/loops.cc`](src/loops.cc#L132) initializes the team. Inherited.
+
+
+
+**Used in.** [Runtime schedule configuration](#subsystem-runtime-schedule-configuration). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="subsystem-static-worksharing"></a>
+
+### 3. Static worksharing
+
+[Back to the subsystem map](#architecture-and-execution-guide).
+
+**Code.** [`src/loops.cc`](src/loops.cc), [`src/loops.h`](src/loops.h).
+
+**Techniques.** [Static blocked and cyclic partitioning](#technique-static-block-cyclic-partition).
+
+<a id="technique-static-block-cyclic-partition"></a>
+
+<details>
+<summary>Static blocked and cyclic partitioning</summary>
+
+**Mechanism.** The blocked schedule divides canonical iterations by team size, gives one extra iteration to each of the first remainder threads, and returns one contiguous range per thread. The chunked form starts each thread at its thread index and advances by the team size, producing cyclic chunks. Runtime-dispatched cyclic scheduling returns one chunk per call.
+
+**Example.** With ten canonical iterations and four threads, the blocked ranges have lengths 3, 3, 2, and 2. With chunk size 1, the cyclic form assigns indices 0, 1, 2, 3, then 4, 5, 6, 7, and so on.
+
+**Why here.** Both policies use the canonical loop bounds already passed by Clang and need no shared claim counter.
+
+**Tradeoffs.** Static assignment does not react to iteration cost. Cyclic runtime scheduling also needs a runtime dispatch call for each chunk.
+
+**Code and ownership.** [`src/loops.cc`](src/loops.cc#L140) partitions static ranges; [`src/loops.cc`](src/loops.cc#L470) dispatches cyclic chunks. Inherited.
+
+
+
+**Used in.** [Static worksharing](#subsystem-static-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="subsystem-dynamic-worksharing"></a>
+
+### 4. Dynamic worksharing
+
+[Back to the subsystem map](#architecture-and-execution-guide).
+
+**Code.** [`src/loops.cc`](src/loops.cc), [`src/loops.h`](src/loops.h), [`src/threads.h`](src/threads.h), [`src/fac2.h`](src/fac2.h).
+
+**Techniques.** [Dynamic claims with compare-and-swap](#technique-dynamic-atomic-claims), [Guided claims that shrink with remaining work](#technique-guided-claims), [Nonmonotonic dynamic work stealing](#technique-nonmonotonic-work-stealing), [Factoring-2 batch claims](#technique-fac2-batch-claims), [Mutex-serialized FAC2 claims](#technique-fac2-serialized-claims), [Descriptor-local scheduler lifecycle](#technique-descriptor-local-lifecycle).
+
+**Related concepts.** [compiler ABI](#compiler-abi), [loop descriptor](#loop-descriptor), [nowait loop](#nowait-loop).
+
+<a id="technique-dynamic-atomic-claims"></a>
+
+<details>
+<summary>Dynamic claims with compare-and-swap</summary>
+
+**Mechanism.** Monotonic dynamic dispatch loads the shared next canonical iteration and attempts to advance it by one with compare-and-swap. A successful thread converts that canonical index to loop bounds. A failed compare retries after yielding. The canonical loop has already divided the user iteration range by the requested chunk size, so each claim can represent that chunk.
+
+**Example.** With chunk size 4, successive successful claims return canonical indices 0, 1, 2, then map to user iterations 0–3, 4–7, and 8–11.
+
+**Why here.** Threads claim work as they become available, which suits loops whose iteration costs vary.
+
+**Tradeoffs.** Contending workers update one shared counter, and failed compare-and-swap attempts retry. This path does not reserve a batch of claims.
+
+**Code and ownership.** [`src/loops.cc`](src/loops.cc#L556) implements `dynamicLoop::dispatchMonotonic`; [`src/loops.cc`](src/loops.cc#L712) selects it. Inherited.
+
+
+
+**Used in.** [Dynamic worksharing](#subsystem-dynamic-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-guided-claims"></a>
+
+<details>
+<summary>Guided claims that shrink with remaining work</summary>
+
+**Mechanism.** Guided dispatch reads the next canonical index, computes the remaining count, and proposes half of the rounded-up per-thread share. A compare-and-swap reserves that range; failure retries with refreshed state. The proposed range therefore shrinks as other threads claim work, down to the implementation's one-iteration floor.
+
+**Example.** If 100 canonical iterations remain for four threads, a claimant proposes 13 iterations: half of the rounded-up share of 25 is rounded up to 13.
+
+**Why here.** Guided scheduling combines larger early claims with smaller later claims using the runtime's shared next-index state.
+
+**Tradeoffs.** The implementation chooses one-half of the per-thread share rather than exposing a tuning parameter. Concurrent updates can make a proposal stale, so the claimant retries.
+
+**Code and ownership.** [`src/loops.cc`](src/loops.cc#L497) implements `dynamicLoop::dispatchGuided`; [`src/loops.cc`](src/loops.cc#L712) selects it. Inherited.
+
+
+
+**Used in.** [Dynamic worksharing](#subsystem-dynamic-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-nonmonotonic-work-stealing"></a>
+
+<details>
+<summary>Nonmonotonic dynamic work stealing</summary>
+
+**Mechanism.** Initialization divides canonical iterations into balanced contiguous ranges. A thread consumes its own range first. When empty, it visits victims from a random starting point; `trySteal` atomically shortens a victim's range by roughly half and returns the stolen tail. Started-iteration counters let a worker mark the loop finished once all work has begun.
+
+**Example.** If a worker exhausts its local interval while another has a range of 20 unstarted iterations, a successful steal takes about 10 and leaves the rest available to that owner or another thief.
+
+**Why here.** The nonmonotonic dynamic path rebalances remaining static ranges without routing every local iteration through one global claim counter.
+
+**Tradeoffs.** Stealing uses shared atomic range state and random victim scans. Iteration order is not preserved, and this implementation calls the scheme an area for improvement.
+
+**Code and ownership.** [`src/loops.cc`](src/loops.cc#L583) scans for work; [`src/loops.cc`](src/loops.cc#L759) consumes local ranges and [`src/loops.cc`](src/loops.cc#L819) steals them. Inherited.
+
+
+
+**Used in.** [Dynamic worksharing](#subsystem-dynamic-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-fac2-batch-claims"></a>
+
+<details>
+<summary>Factoring-2 batch claims</summary>
+
+**Mechanism.** `fac2Scheduler::next` locks descriptor state, computes `ceil(remaining / (2 * workers))` with quotient and remainder, clamps it to the minimum chunk, and permits up to `workers` claims before recalculation, regardless of which worker claims them. Each claim is capped at remaining iterations.
+
+**Example.** With 4 workers and 100 iterations, a batch begins with 13 iterations per claim. After four claims the scheduler recomputes from the remaining range.
+
+**Why here.** The runtime exposes FAC2 as a runtime-selected dynamic schedule and can distribute irregular loop ranges without compiler changes.
+
+**Tradeoffs.** Each claim takes the descriptor mutex. A large first batch can leave a heavy prefix on one worker. Changing the minimum affects claim size only when it constrains the computed chunk, so lowering it does not generally fix that imbalance.
+
+**Code and ownership.** [`src/fac2.h`](src/fac2.h#L19) defines the extension; [`src/loops.cc`](src/loops.cc#L536) maps canonical indices back to loop bounds. Extension.
+
+
+
+**Used in.** [Dynamic worksharing](#subsystem-dynamic-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-fac2-serialized-claims"></a>
+
+<details>
+<summary>Mutex-serialized FAC2 claims</summary>
+
+**Mechanism.** `fac2Scheduler::next` holds its descriptor-local mutex while it checks completion, starts a batch if needed, assigns a range, advances `next_`, and consumes one batch slot. Reset uses the same mutex, so the range and batch counters change together.
+
+**Example.** Two workers entering `next` together receive consecutive, non-overlapping ranges because each completes the read, update, and slot decrement before the other enters the critical section.
+
+**Why here.** The FAC2 counters form one allocation state. Protecting the state together keeps a claim unique without a multiword atomic protocol.
+
+**Tradeoffs.** Every claim takes a mutex, including claims in an active batch. The dynamic dispatch paths use different atomic strategies, and FAC2 does not currently batch-lock amortization across multiple claims.
+
+**Code and ownership.** [`src/fac2.h`](src/fac2.h#L29) guards reset and [`src/fac2.h`](src/fac2.h#L40) guards `next`. Extension.
+
+
+
+**Used in.** [Dynamic worksharing](#subsystem-dynamic-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-descriptor-local-lifecycle"></a>
+
+<details>
+<summary>Descriptor-local scheduler lifecycle</summary>
+
+**Mechanism.** Existing compiler loop descriptors own the FAC2 scheduler. Initialization resets total iterations, next index, worker count, minimum chunk and batch slots; dispatch consumes only that descriptor's state.
+
+**Example.** Two overlapping `nowait` loops have separate next indices and cannot claim each other's iterations.
+
+**Why here.** The existing descriptor lifecycle already separates concurrent worksharing loops and preserves the compiler ABI.
+
+**Tradeoffs.** State must be reset whenever a descriptor is initialized or reused. Team-global state would be smaller but would couple simultaneous loops.
+
+**Code and ownership.** [`src/loops.cc`](src/loops.cc#L271) selects FAC2 and [`src/fac2.h`](src/fac2.h#L29) resets its state. Mixed: inherited descriptor lifecycle and extension scheduler.
+
+
+
+**Used in.** [Dynamic worksharing](#subsystem-dynamic-worksharing). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="subsystem-fac2-correctness-consumer"></a>
+
+### 5. FAC2 correctness consumer
+
+[Back to the subsystem map](#architecture-and-execution-guide).
+
+**Code.** [`tests/test_fac2.cc`](tests/test_fac2.cc).
+
+**Techniques.** [Exact-coverage FAC2 checks](#technique-fac2-exact-coverage-checks).
+
+**Related concepts.** [compiler ABI](#compiler-abi), [nowait loop](#nowait-loop).
+
+<a id="technique-fac2-exact-coverage-checks"></a>
+
+<details>
+<summary>Exact-coverage FAC2 checks</summary>
+
+**Mechanism.** The FAC2 consumer selects the schedule through `omp_set_schedule`, runs `schedule(runtime)` loops, increments a per-iteration counter, and compares reductions with a serial sum. It repeats one loop 100 times, checks overlapping `nowait` loops, exercises signed and unsigned loop widths, and checks a minimum chunk larger than the remaining tail.
+
+**Example.** The 1000-entry `seen` array must contain exactly one for every canonical iteration, while the parallel reduction must equal the independently accumulated serial sum.
+
+**Why here.** These assertions catch lost or duplicated claims and descriptor-state leakage through the actual compiler ABI consumer.
+
+**Tradeoffs.** The test proves these correctness cases, not scheduler balance, a performance advantage, or all OpenMP semantics.
+
+**Code and ownership.** [`tests/test_fac2.cc`](tests/test_fac2.cc#L23) selects FAC2; [`tests/test_fac2.cc`](tests/test_fac2.cc#L34) checks exact coverage and reduction, and later cases check overlap, type widths, and tail handling. Extension.
+
+
+
+**Used in.** [FAC2 correctness consumer](#subsystem-fac2-correctness-consumer). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="subsystem-team-synchronization-and-reduction"></a>
+
+### 6. Team synchronization and reduction
+
+[Back to the subsystem map](#architecture-and-execution-guide).
+
+**Code.** [`src/threads.cc`](src/threads.cc), [`src/entrypoints.cc`](src/entrypoints.cc), [`src/barrier_impl.cc`](src/barrier_impl.cc), [`src/locks.cc`](src/locks.cc), [`tests/test_fac2.cc`](tests/test_fac2.cc).
+
+**Techniques.** [Tree check-in with flag broadcast](#technique-tree-checkin-flag-broadcast), [Compiler-selected atomic or critical reduction](#technique-compiler-selected-reduction).
+
+**Related concepts.** [compiler ABI](#compiler-abi).
+
+<a id="technique-tree-checkin-flag-broadcast"></a>
+
+<details>
+<summary>Tree check-in with flag broadcast</summary>
+
+**Mechanism.** The team creates one selectable barrier. The default FT16FlagLBW4 combines a fixed fan-in-16 arrival tree with flag counters and a flat release broadcast shared by four polling threads per cache line. Arrival information moves toward the root; release flags let waiting workers proceed. Alternating state separates repeated barrier rounds. The wrapper processes task-barrier bookkeeping before the selected check-in.
+
+**Example.** The compiler ABI fork path broadcasts the outlined body to waiting workers, runs the body on the main thread, then checks in at join. A normal loop or reduction completion can use the same team barrier; nowait deliberately omits its end barrier.
+
+**Why here.** The existing team synchronization can be reused by FAC2 consumers without adding a separate scheduler-level barrier.
+
+**Tradeoffs.** Polling and broadcast traffic depend on team size and machine topology. An environment override selects other inherited algorithms, so the default structure is not a universal performance claim. A worker that never arrives can hold up the team.
+
+**Code and ownership.** [`Barrier::newBarrier`](src/threads.cc#L373), [`fixedTreeCheckIn`](src/barrier_impl.cc#L538), [`LBWBroadcast`](src/barrier_impl.cc#L142), and [`fork ABI`](src/entrypoints.cc#L149), inherited LOMP.
+
+
+
+**Used in.** [Team synchronization and reduction](#subsystem-team-synchronization-and-reduction). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+<a id="technique-compiler-selected-reduction"></a>
+
+<details>
+<summary>Compiler-selected atomic or critical reduction</summary>
+
+**Mechanism.** Reduction entry points ask the current thread to choose an available method from compiler flags and optional runtime configuration. Returning 2 asks compiler-generated code to perform its atomic combine; returning 1 enters the runtime critical lock before the compiler combine. Reduction exit releases that lock when used and performs a team barrier for the non-nowait form.
+
+**Example.** The FAC2 correctness consumer uses `reduction(+:sum)` while checking claimed iterations. Its arithmetic combine comes from compiler-generated code; the runtime selects and coordinates the permitted combine path.
+
+**Why here.** FAC2 loops can retain ordinary reduction semantics through the inherited compiler ABI.
+
+**Tradeoffs.** Atomic combining needs compiler support, and a critical combine serializes updates. This runtime does not implement tree reduction; unsupported forced choices warn and fall back as coded. A scheduling coverage test does not demonstrate every reduction type or all OpenMP semantics.
+
+**Code and ownership.** [`chooseReduction` and `enterReduction`](src/threads.cc#L434), [`leaveReduction`](src/threads.cc#L494), [`critical lock entry`](src/locks.cc#L428), and [`FAC2 consumer`](tests/test_fac2.cc#L36), inherited runtime used by the extension consumer.
+
+
+
+**Used in.** [Team synchronization and reduction](#subsystem-team-synchronization-and-reduction). [Back to the subsystem map](#architecture-and-execution-guide).
+
+</details>
+
+## Guide
+
+[Implementation techniques](#implementation-techniques) ·
+[Architecture and execution guide](#architecture-and-execution-guide) · [FAC2 schedule](#fac2-schedule) · [Build and verify](#build-and-verify) · [Native measurements](#native-measurements) · [Scope and limitations](#scope-and-limitations) · [Coursework and research](#coursework-and-research)
 
 ## FAC2 schedule
 
@@ -234,256 +656,3 @@ interleaved measurements against equivalent work and inputs.
   [Buder, Ciorba, and Iwainsky, “OpenMP Loop Scheduling Revisited: Making a Case
   for More Schedules”](https://arxiv.org/abs/1809.03188) and the [author's thesis,
   section 2.2.2.5](https://hpc.dmi.unibas.ch/wp-content/uploads/sites/87/2019/11/2018_patrick_buder_ma_thesisjanuary2018.pdf).
-
-## Implementation techniques
-
-This section covers active FAC2 scheduling and the inherited runtime paths it uses. The implementation and rationale link above remain authoritative for broader runtime scope.
-
-| Subsystem | Technique cards | Source |
-| --- | --- | --- |
-| Compiler ABI and parallel team | [compiler ABI dispatch](#technique-compiler-abi-dispatch), [persistent worker team](#technique-persistent-worker-team) | [`src/interface.h`](src/interface.h), [`src/entrypoints.cc`](src/entrypoints.cc), [`src/threads.cc`](src/threads.cc), [`src/threads.h`](src/threads.h) |
-| Runtime schedule configuration | [team-scoped schedule selection](#technique-team-runtime-schedule), [environment parsing and fallback](#technique-schedule-environment-fallback) | [`src/globals.cc`](src/globals.cc), [`src/loops.cc`](src/loops.cc), [`src/environment.cc`](src/environment.cc) |
-| Static worksharing | [blocked and cyclic partitions](#technique-static-block-cyclic-partition) | [`src/loops.cc`](src/loops.cc), [`src/loops.h`](src/loops.h) |
-| Dynamic worksharing | [dynamic atomic claims](#technique-dynamic-atomic-claims), [guided claims](#technique-guided-claims), [nonmonotonic work stealing](#technique-nonmonotonic-work-stealing), [FAC2 batch claims](#technique-fac2-batch-claims), [FAC2 mutex claims](#technique-fac2-serialized-claims), [descriptor-local lifecycle](#technique-descriptor-local-lifecycle) | [`src/loops.cc`](src/loops.cc), [`src/loops.h`](src/loops.h), [`src/fac2.h`](src/fac2.h), [`src/threads.h`](src/threads.h) |
-| Team synchronization and reduction | [Tree check-in and flag broadcast](#technique-tree-checkin-flag-broadcast), [Atomic or critical reduction](#technique-compiler-selected-reduction) | [`src/threads.cc`](src/threads.cc), [`src/barrier_impl.cc`](src/barrier_impl.cc), [`src/locks.cc`](src/locks.cc) |
-| FAC2 correctness consumer | [exact-coverage checks](#technique-fac2-exact-coverage-checks) | [`tests/test_fac2.cc`](tests/test_fac2.cc) |
-
-The table covers the active compiler dispatch and worksharing paths in this repository, plus the mapped FAC2 correctness consumer. It excludes preserved examples and unrelated runtime subsystems.
-
-<a id="technique-compiler-abi-dispatch"></a>
-
-<details>
-<summary>Compiler ABI dispatch</summary>
-
-**Mechanism.** Clang calls LLVM-compatible symbols such as `__kmpc_fork_call` and width-specific `__kmpc_dispatch_init_*` and `__kmpc_dispatch_next_*`. The runtime initializes the loop descriptor once, stores a schedule-specific member-function pointer, and invokes that function for each claim. This keeps loop policy behind the compiler ABI.
-
-**Example.** A compiler-generated runtime-scheduled loop enters through `__kmpc_dispatch_init_4`, requests bounds through `__kmpc_dispatch_next_4`, then lets the runtime mark the thread done when no range remains.
-
-**Why here.** FAC2 plugs into the existing dispatch entry points, so consumers can select it through `schedule(runtime)` without a new compiler interface.
-
-**Tradeoffs.** The runtime must match the compiler's symbol names, data widths, and calling conventions. This ABI subset does not imply full OpenMP support.
-
-**Code and ownership.** [`src/interface.h`](src/interface.h#L123) declares the fork entry point. [`src/entrypoints.cc`](src/entrypoints.cc#L119) handles parallel entry; [`src/loops.cc`](src/loops.cc#L890) expands the dispatch wrappers. Inherited.
-
-</details>
-
-<a id="technique-persistent-worker-team"></a>
-
-<details>
-<summary>Persistent worker team and fork barrier</summary>
-
-**Mechanism.** `ThreadTeam` creates the requested workers once. Each worker's `outerLoop` checks out work at the team's barrier, runs the invocation, checks in, and waits for another fork. `__kmpc_fork_call` wakes the barrier, runs the same invocation on the master thread, then checks in and leaves the parallel region.
-
-**Example.** `__kmpc_fork_call` marks the team active, publishes an invocation through the barrier, and later waits for workers to finish before returning to serial execution.
-
-**Why here.** The loop scheduler can hand claims to established team members without creating operating-system threads for every parallel region.
-
-**Tradeoffs.** Workers remain alive and team size cannot change inside a parallel region. LOMP rejects nested parallelism and does not implement general team resizing.
-
-**Code and ownership.** [`src/threads.cc`](src/threads.cc#L57) constructs a team and [`src/threads.cc`](src/threads.cc#L169) runs workers; [`src/entrypoints.cc`](src/entrypoints.cc#L149) wakes the barrier and [`src/entrypoints.cc`](src/entrypoints.cc#L155) checks in the master. Inherited.
-
-</details>
-
-<a id="technique-team-runtime-schedule"></a>
-
-<details>
-<summary>Team-scoped runtime schedule selection</summary>
-
-**Mechanism.** The team stores a runtime schedule and chunk. `OMP_SCHEDULE` initializes those fields when the runtime starts; `omp_set_schedule` updates them through the same setter. At loop initialization, `computeDynamicLoopParams` replaces `schedule(runtime)` with the team's concrete policy and chunk before selecting dispatch.
-
-**Example.** `omp_set_schedule(omp_sched_dynamic, 4)` makes later `schedule(runtime)` loops use dynamic four-iteration chunks in that team.
-
-**Why here.** One team-owned setting connects the environment and public API to the compiler's runtime schedule path.
-
-**Tradeoffs.** The setter is explicitly documented as not thread-safe. A change affects subsequent loop initialization, not a descriptor that already captured its schedule.
-
-**Code and ownership.** [`src/threads.h`](src/threads.h#L128) stores the values; [`src/loops.cc`](src/loops.cc#L113) sets them and [`src/loops.cc`](src/loops.cc#L233) resolves them. Inherited.
-
-</details>
-
-<a id="technique-schedule-environment-fallback"></a>
-
-<details>
-<summary>Environment schedule parsing and fallback</summary>
-
-**Mechanism.** `OMP_SCHEDULE` is split at its comma into a schedule name and integer chunk. `lookupSchedule` maps recognized names to ABI schedule values. An unknown name warns and becomes static; a chunk conversion failure leaves the team at its initial static default because `initializeLoops` applies the setting only after successful conversion.
-
-**Example.** `OMP_SCHEDULE=fac2,4` selects FAC2 with chunk 4. `OMP_SCHEDULE=unknown,4` warns and selects static with chunk 4.
-
-**Why here.** The runtime accepts both startup configuration and the public schedule API, while an unknown environment schedule does not prevent runtime initialization.
-
-**Tradeoffs.** The parser handles one comma-separated integer argument and does not implement the full OpenMP environment grammar. `std::stoi` may accept a numeric prefix before trailing characters.
-
-**Code and ownership.** [`src/environment.cc`](src/environment.cc#L69) parses the pair; [`src/loops.cc`](src/loops.cc#L59) maps names and [`src/loops.cc`](src/loops.cc#L132) initializes the team. Inherited.
-
-</details>
-
-<a id="technique-static-block-cyclic-partition"></a>
-
-<details>
-<summary>Static blocked and cyclic partitioning</summary>
-
-**Mechanism.** The blocked schedule divides canonical iterations by team size, gives one extra iteration to each of the first remainder threads, and returns one contiguous range per thread. The chunked form starts each thread at its thread index and advances by the team size, producing cyclic chunks. Runtime-dispatched cyclic scheduling returns one chunk per call.
-
-**Example.** With ten canonical iterations and four threads, the blocked ranges have lengths 3, 3, 2, and 2. With chunk size 1, the cyclic form assigns indices 0, 1, 2, 3, then 4, 5, 6, 7, and so on.
-
-**Why here.** Both policies use the canonical loop bounds already passed by Clang and need no shared claim counter.
-
-**Tradeoffs.** Static assignment does not react to iteration cost. Cyclic runtime scheduling also needs a runtime dispatch call for each chunk.
-
-**Code and ownership.** [`src/loops.cc`](src/loops.cc#L140) partitions static ranges; [`src/loops.cc`](src/loops.cc#L470) dispatches cyclic chunks. Inherited.
-
-</details>
-
-<a id="technique-dynamic-atomic-claims"></a>
-
-<details>
-<summary>Dynamic claims with compare-and-swap</summary>
-
-**Mechanism.** Monotonic dynamic dispatch loads the shared next canonical iteration and attempts to advance it by one with compare-and-swap. A successful thread converts that canonical index to loop bounds. A failed compare retries after yielding. The canonical loop has already divided the user iteration range by the requested chunk size, so each claim can represent that chunk.
-
-**Example.** With chunk size 4, successive successful claims return canonical indices 0, 1, 2, then map to user iterations 0–3, 4–7, and 8–11.
-
-**Why here.** Threads claim work as they become available, which suits loops whose iteration costs vary.
-
-**Tradeoffs.** Contending workers update one shared counter, and failed compare-and-swap attempts retry. This path does not reserve a batch of claims.
-
-**Code and ownership.** [`src/loops.cc`](src/loops.cc#L556) implements `dynamicLoop::dispatchMonotonic`; [`src/loops.cc`](src/loops.cc#L712) selects it. Inherited.
-
-</details>
-
-<a id="technique-guided-claims"></a>
-
-<details>
-<summary>Guided claims that shrink with remaining work</summary>
-
-**Mechanism.** Guided dispatch reads the next canonical index, computes the remaining count, and proposes half of the rounded-up per-thread share. A compare-and-swap reserves that range; failure retries with refreshed state. The proposed range therefore shrinks as other threads claim work, down to the implementation's one-iteration floor.
-
-**Example.** If 100 canonical iterations remain for four threads, a claimant proposes 13 iterations: half of the rounded-up share of 25 is rounded up to 13.
-
-**Why here.** Guided scheduling combines larger early claims with smaller later claims using the runtime's shared next-index state.
-
-**Tradeoffs.** The implementation chooses one-half of the per-thread share rather than exposing a tuning parameter. Concurrent updates can make a proposal stale, so the claimant retries.
-
-**Code and ownership.** [`src/loops.cc`](src/loops.cc#L497) implements `dynamicLoop::dispatchGuided`; [`src/loops.cc`](src/loops.cc#L712) selects it. Inherited.
-
-</details>
-
-<a id="technique-nonmonotonic-work-stealing"></a>
-
-<details>
-<summary>Nonmonotonic dynamic work stealing</summary>
-
-**Mechanism.** Initialization divides canonical iterations into balanced contiguous ranges. A thread consumes its own range first. When empty, it visits victims from a random starting point; `trySteal` atomically shortens a victim's range by roughly half and returns the stolen tail. Started-iteration counters let a worker mark the loop finished once all work has begun.
-
-**Example.** If a worker exhausts its local interval while another has a range of 20 unstarted iterations, a successful steal takes about 10 and leaves the rest available to that owner or another thief.
-
-**Why here.** The nonmonotonic dynamic path rebalances remaining static ranges without routing every local iteration through one global claim counter.
-
-**Tradeoffs.** Stealing uses shared atomic range state and random victim scans. Iteration order is not preserved, and this implementation calls the scheme an area for improvement.
-
-**Code and ownership.** [`src/loops.cc`](src/loops.cc#L583) scans for work; [`src/loops.cc`](src/loops.cc#L759) consumes local ranges and [`src/loops.cc`](src/loops.cc#L819) steals them. Inherited.
-
-</details>
-
-<a id="technique-fac2-serialized-claims"></a>
-
-<details>
-<summary>Mutex-serialized FAC2 claims</summary>
-
-**Mechanism.** `fac2Scheduler::next` holds its descriptor-local mutex while it checks completion, starts a batch if needed, assigns a range, advances `next_`, and consumes one batch slot. Reset uses the same mutex, so the range and batch counters change together.
-
-**Example.** Two workers entering `next` together receive consecutive, non-overlapping ranges because each completes the read, update, and slot decrement before the other enters the critical section.
-
-**Why here.** The FAC2 counters form one allocation state. Protecting the state together keeps a claim unique without a multiword atomic protocol.
-
-**Tradeoffs.** Every claim takes a mutex, including claims in an active batch. The dynamic dispatch paths use different atomic strategies, and FAC2 does not currently batch-lock amortization across multiple claims.
-
-**Code and ownership.** [`src/fac2.h`](src/fac2.h#L29) guards reset and [`src/fac2.h`](src/fac2.h#L40) guards `next`. Extension.
-
-</details>
-
-<a id="technique-fac2-exact-coverage-checks"></a>
-
-<details>
-<summary>Exact-coverage FAC2 checks</summary>
-
-**Mechanism.** The FAC2 consumer selects the schedule through `omp_set_schedule`, runs `schedule(runtime)` loops, increments a per-iteration counter, and compares reductions with a serial sum. It repeats one loop 100 times, checks overlapping `nowait` loops, exercises signed and unsigned loop widths, and checks a minimum chunk larger than the remaining tail.
-
-**Example.** The 1000-entry `seen` array must contain exactly one for every canonical iteration, while the parallel reduction must equal the independently accumulated serial sum.
-
-**Why here.** These assertions catch lost or duplicated claims and descriptor-state leakage through the actual compiler ABI consumer.
-
-**Tradeoffs.** The test proves these correctness cases, not scheduler balance, a performance advantage, or all OpenMP semantics.
-
-**Code and ownership.** [`tests/test_fac2.cc`](tests/test_fac2.cc#L23) selects FAC2; [`tests/test_fac2.cc`](tests/test_fac2.cc#L34) checks exact coverage and reduction, and later cases check overlap, type widths, and tail handling. Extension.
-
-</details>
-
-<a id="technique-fac2-batch-claims"></a>
-
-<details>
-<summary>Factoring-2 batch claims</summary>
-
-**Mechanism.** `fac2Scheduler::next` locks descriptor state, computes `ceil(remaining / (2 * workers))` with quotient and remainder, clamps it to the minimum chunk, and permits up to `workers` claims before recalculation, regardless of which worker claims them. Each claim is capped at remaining iterations.
-
-**Example.** With 4 workers and 100 iterations, a batch begins with 13 iterations per claim. After four claims the scheduler recomputes from the remaining range.
-
-**Why here.** The runtime exposes FAC2 as a runtime-selected dynamic schedule and can distribute irregular loop ranges without compiler changes.
-
-**Tradeoffs.** Each claim takes the descriptor mutex. A large first batch can leave a heavy prefix on one worker. Changing the minimum affects claim size only when it constrains the computed chunk, so lowering it does not generally fix that imbalance.
-
-**Code and ownership.** [`src/fac2.h`](src/fac2.h#L19) defines the extension; [`src/loops.cc`](src/loops.cc#L536) maps canonical indices back to loop bounds. Extension.
-
-</details>
-
-<a id="technique-descriptor-local-lifecycle"></a>
-
-<details>
-<summary>Descriptor-local scheduler lifecycle</summary>
-
-**Mechanism.** Existing compiler loop descriptors own the FAC2 scheduler. Initialization resets total iterations, next index, worker count, minimum chunk and batch slots; dispatch consumes only that descriptor's state.
-
-**Example.** Two overlapping `nowait` loops have separate next indices and cannot claim each other's iterations.
-
-**Why here.** The existing descriptor lifecycle already separates concurrent worksharing loops and preserves the compiler ABI.
-
-**Tradeoffs.** State must be reset whenever a descriptor is initialized or reused. Team-global state would be smaller but would couple simultaneous loops.
-
-**Code and ownership.** [`src/loops.cc`](src/loops.cc#L271) selects FAC2 and [`src/fac2.h`](src/fac2.h#L29) resets its state. Mixed: inherited descriptor lifecycle and extension scheduler.
-
-</details>
-
-<a id="technique-tree-checkin-flag-broadcast"></a>
-
-<details>
-<summary>Tree check-in with flag broadcast</summary>
-
-**Mechanism.** The team creates one selectable barrier. The default FT16FlagLBW4 combines a fixed fan-in-16 arrival tree with flag counters and a flat release broadcast shared by four polling threads per cache line. Arrival information moves toward the root; release flags let waiting workers proceed. Alternating state separates repeated barrier rounds. The wrapper processes task-barrier bookkeeping before the selected check-in.
-
-**Example.** The compiler ABI fork path broadcasts the outlined body to waiting workers, runs the body on the main thread, then checks in at join. A normal loop or reduction completion can use the same team barrier; nowait deliberately omits its end barrier.
-
-**Why here.** The existing team synchronization can be reused by FAC2 consumers without adding a separate scheduler-level barrier.
-
-**Tradeoffs.** Polling and broadcast traffic depend on team size and machine topology. An environment override selects other inherited algorithms, so the default structure is not a universal performance claim. A worker that never arrives can hold up the team.
-
-**Code and ownership.** [`Barrier::newBarrier`](src/threads.cc#L373), [`fixedTreeCheckIn`](src/barrier_impl.cc#L538), [`LBWBroadcast`](src/barrier_impl.cc#L142), and [`fork ABI`](src/entrypoints.cc#L149), inherited LOMP.
-
-</details>
-
-<a id="technique-compiler-selected-reduction"></a>
-
-<details>
-<summary>Compiler-selected atomic or critical reduction</summary>
-
-**Mechanism.** Reduction entry points ask the current thread to choose an available method from compiler flags and optional runtime configuration. Returning 2 asks compiler-generated code to perform its atomic combine; returning 1 enters the runtime critical lock before the compiler combine. Reduction exit releases that lock when used and performs a team barrier for the non-nowait form.
-
-**Example.** The FAC2 correctness consumer uses `reduction(+:sum)` while checking claimed iterations. Its arithmetic combine comes from compiler-generated code; the runtime selects and coordinates the permitted combine path.
-
-**Why here.** FAC2 loops can retain ordinary reduction semantics through the inherited compiler ABI.
-
-**Tradeoffs.** Atomic combining needs compiler support, and a critical combine serializes updates. This runtime does not implement tree reduction; unsupported forced choices warn and fall back as coded. A scheduling coverage test does not demonstrate every reduction type or all OpenMP semantics.
-
-**Code and ownership.** [`chooseReduction` and `enterReduction`](src/threads.cc#L434), [`leaveReduction`](src/threads.cc#L494), [`critical lock entry`](src/locks.cc#L428), and [`FAC2 consumer`](tests/test_fac2.cc#L36), inherited runtime used by the extension consumer.
-
-</details>
