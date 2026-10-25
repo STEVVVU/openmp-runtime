@@ -12,6 +12,328 @@ the upstream license and source history remain in the repository.
 
 ## Architecture and execution guide
 
+<!-- execution-flow:start -->
+### Execution flow
+
+Start with the primary path, then expand a detailed workflow. Select a numbered node to see its operation, implementation techniques, and source. Solid arrows show the named control, data, or lifecycle handoff; dotted arrows show error paths. Separate entry points are named in each workflow.
+
+<a id="review-walkthrough"></a>
+
+#### Walk through one concrete example
+
+A compiler-generated parallel loop selects the FAC2 runtime schedule with minimum chunk 4 and dispatches its worksharing iterations.
+
+**Trace.** [Select runtime schedule ICV](#flow-step-choose-schedule) → [Initialize shared loop descriptor](#flow-step-initialize-descriptor) → [Choose dispatch function](#flow-step-dispatch-selection) → [Claim FAC2 batch under descriptor lock](#flow-step-fac2-claim) → [Retire descriptor for this thread](#flow-step-end-loop).
+
+**Result and boundary.** The runtime selects FAC2 for the loop descriptor, issues bounded batches under that descriptor's mutex, and retires the descriptor for the thread when dispatch finishes. Dispatch exhaustion does not itself call the worksharing barrier; synchronization follows the separate team/reduction path when required by the construct.
+
+<details>
+<summary>Implementation decisions to explain</summary>
+
+**Why keep FAC2 state on the loop descriptor?** Each active loop gets its own claim state, preventing overlapping nowait loops from sharing indices. The state must be reset when descriptors are initialized or reused.
+
+[Descriptor-local scheduler lifecycle](#technique-descriptor-local-lifecycle).
+
+**Why serialize FAC2 claims with a descriptor mutex?** The next range and remaining batch slots are updated together, so one lock protects the claim invariant. Each claim pays the mutex cost.
+
+[Mutex-serialized FAC2 claims](#technique-fac2-serialized-claims).
+
+</details>
+
+#### Primary execution flow
+
+Compiler ABI calls enter a persistent team, initialize a per-team loop descriptor, then select a concrete scheduling path. Independent runtime configuration and consumer verification are detailed separately.
+
+```mermaid
+flowchart TD
+    n1["1. Enter compiler parallel ABI"]
+    click n1 href "https://github.com/STEVVVU/openmp-runtime#flow-step-abi-fork" "Open step, techniques, and source" _top
+    n2["2. Run persistent team workers"]
+    click n2 href "https://github.com/STEVVVU/openmp-runtime#flow-step-team-workers" "Open step, techniques, and source" _top
+    n4["4. Initialize shared loop<br/>descriptor"]
+    click n4 href "https://github.com/STEVVVU/openmp-runtime#flow-step-initialize-descriptor" "Open step, techniques, and source" _top
+    n5["5. Choose dispatch function"]
+    click n5 href "https://github.com/STEVVVU/openmp-runtime#flow-step-dispatch-selection" "Open step, techniques, and source" _top
+    n6["6. Assign static iteration<br/>ranges"]
+    click n6 href "https://github.com/STEVVVU/openmp-runtime#flow-step-static-dispatch" "Open step, techniques, and source" _top
+    n7["7. Claim dynamic or guided<br/>ranges"]
+    click n7 href "https://github.com/STEVVVU/openmp-runtime#flow-step-dynamic-claims" "Open step, techniques, and source" _top
+    n8["8. Claim FAC2 batch under<br/>descriptor lock"]
+    click n8 href "https://github.com/STEVVVU/openmp-runtime#flow-step-fac2-claim" "Open step, techniques, and source" _top
+    n9["9. Take local work or steal a<br/>peer range"]
+    click n9 href "https://github.com/STEVVVU/openmp-runtime#flow-step-nonmonotonic-steal" "Open step, techniques, and source" _top
+    n10["10. Retire descriptor for this<br/>thread"]
+    click n10 href "https://github.com/STEVVVU/openmp-runtime#flow-step-end-loop" "Open step, techniques, and source" _top
+    n11["11. Synchronize team arrivals"]
+    click n11 href "https://github.com/STEVVVU/openmp-runtime#flow-step-team-barrier" "Open step, techniques, and source" _top
+    n12["12. Select and complete<br/>reduction method"]
+    click n12 href "https://github.com/STEVVVU/openmp-runtime#flow-step-reduction" "Open step, techniques, and source" _top
+    n1 -->|"team wakeUp publishes outlined body"| n2
+    n2 -->|"outlined loop reaches runtime init ABI"| n4
+    n4 -->|"descriptor initialized and schedule<br/>resolved"| n5
+    n5 -->|"resolved static schedule"| n6
+    n5 -->|"dynamic or guided schedule"| n7
+    n5 -->|"FAC2 schedule"| n8
+    n5 -->|"nonmonotonic dynamic schedule"| n9
+    n6 -->|"no further static chunks"| n10
+    n7 -->|"claim reports no remaining iterations"| n10
+    n8 -->|"next reports total reached"| n10
+    n9 -->|"all probed work exhausted"| n10
+    n10 -->|"compiler emits loop-end barrier unless<br/>nowait"| n11
+    n12 -->|"non-nowait reduction leaves and<br/>requests barrier"| n11
+```
+
+**Detailed workflows.** [Run an outlined parallel region](#flow-workflow-parallel-region) · [Configure schedule selection](#flow-workflow-runtime-schedule-configuration) · [Dispatch worksharing iterations](#flow-workflow-worksharing-schedules) · [Verify FAC2 coverage and reduction](#flow-workflow-fac2-verification).
+
+<a id="flow-workflow-parallel-region"></a>
+
+<details>
+<summary>Run an outlined parallel region</summary>
+
+The ABI wakes persistent workers, runs the body on the master, then checks the team in and leaves parallel mode.
+
+```mermaid
+flowchart TD
+    n1["1. Enter compiler parallel ABI"]
+    click n1 href "https://github.com/STEVVVU/openmp-runtime#flow-step-abi-fork" "Open step, techniques, and source" _top
+    n2["2. Run persistent team workers"]
+    click n2 href "https://github.com/STEVVVU/openmp-runtime#flow-step-team-workers" "Open step, techniques, and source" _top
+    n11["11. Synchronize team arrivals"]
+    click n11 href "https://github.com/STEVVVU/openmp-runtime#flow-step-team-barrier" "Open step, techniques, and source" _top
+    n1 -->|"outlined body published"| n2
+    n2 -->|"workers complete and check in"| n11
+```
+
+</details>
+
+<a id="flow-workflow-runtime-schedule-configuration"></a>
+
+<details>
+<summary>Configure schedule selection</summary>
+
+Independent configuration path: omp_set_schedule updates the current team's ICV; environment parsing happens when team loop state initializes.
+
+```mermaid
+flowchart TD
+    n3["3. Select runtime schedule ICV"]
+    click n3 href "https://github.com/STEVVVU/openmp-runtime#flow-step-choose-schedule" "Open step, techniques, and source" _top
+```
+
+</details>
+
+<a id="flow-workflow-worksharing-schedules"></a>
+
+<details>
+<summary>Dispatch worksharing iterations</summary>
+
+After loop initialization, each resolved schedule selects its own claim path. The paths converge when the thread has no further iterations.
+
+```mermaid
+flowchart TD
+    n4["4. Initialize shared loop<br/>descriptor"]
+    click n4 href "https://github.com/STEVVVU/openmp-runtime#flow-step-initialize-descriptor" "Open step, techniques, and source" _top
+    n5["5. Choose dispatch function"]
+    click n5 href "https://github.com/STEVVVU/openmp-runtime#flow-step-dispatch-selection" "Open step, techniques, and source" _top
+    n6["6. Assign static iteration<br/>ranges"]
+    click n6 href "https://github.com/STEVVVU/openmp-runtime#flow-step-static-dispatch" "Open step, techniques, and source" _top
+    n7["7. Claim dynamic or guided<br/>ranges"]
+    click n7 href "https://github.com/STEVVVU/openmp-runtime#flow-step-dynamic-claims" "Open step, techniques, and source" _top
+    n8["8. Claim FAC2 batch under<br/>descriptor lock"]
+    click n8 href "https://github.com/STEVVVU/openmp-runtime#flow-step-fac2-claim" "Open step, techniques, and source" _top
+    n9["9. Take local work or steal a<br/>peer range"]
+    click n9 href "https://github.com/STEVVVU/openmp-runtime#flow-step-nonmonotonic-steal" "Open step, techniques, and source" _top
+    n10["10. Retire descriptor for this<br/>thread"]
+    click n10 href "https://github.com/STEVVVU/openmp-runtime#flow-step-end-loop" "Open step, techniques, and source" _top
+    n3["3. Select runtime schedule ICV"]
+    click n3 href "https://github.com/STEVVVU/openmp-runtime#flow-step-choose-schedule" "Open step, techniques, and source" _top
+    n4 -->|"schedule resolved and published"| n5
+    n5 -->|"static case"| n6
+    n5 -->|"dynamic or guided case"| n7
+    n5 -->|"FAC2 case"| n8
+    n5 -->|"nonmonotonic case"| n9
+    n6 -->|"no chunk remains"| n10
+    n7 -->|"claim reports exhausted"| n10
+    n8 -->|"next equals total"| n10
+    n9 -->|"no available work remains"| n10
+    n3 -->|"runtime schedule reads configured team<br/>state"| n4
+```
+
+</details>
+
+<a id="flow-workflow-fac2-verification"></a>
+
+<details>
+<summary>Verify FAC2 coverage and reduction</summary>
+
+Separate test consumer selects FAC2, checks exact coverage, reduction and descriptor reuse; this path validates implementation and is not production dispatch.
+
+```mermaid
+flowchart TD
+    n13["13. Check FAC2 coverage and<br/>reduction"]
+    click n13 href "https://github.com/STEVVVU/openmp-runtime#flow-step-fac2-consumer" "Open step, techniques, and source" _top
+```
+
+</details>
+
+#### Steps, techniques, and source
+
+These source traces cover the active scope below. They explain implementation behavior; benchmark results and their limits remain in the measurement sections.
+
+<a id="flow-step-abi-fork"></a>
+
+##### 1. Enter compiler parallel ABI
+
+**Component.** __kmpc_fork_call. The ABI packs the compiler thunk and arguments, initializes the current thread and team, rejects nested parallel regions, wakes the team with the body, runs it on the master, then checks in and leaves parallel mode.
+
+**Techniques at this step.** [Compiler ABI dispatch](#technique-compiler-abi-dispatch) · [Persistent worker team and fork barrier](#technique-persistent-worker-team).
+
+**Source.** [`src/entrypoints.cc:119`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/entrypoints.cc#L119). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-team-workers"></a>
+
+##### 2. Run persistent team workers
+
+**Component.** ThreadTeam and Thread::outerLoop. The established team owns persistent worker threads. Workers wait for fork work and execute the published InvocationInfo until the barrier completes the region.
+
+**Techniques at this step.** [Persistent worker team and fork barrier](#technique-persistent-worker-team).
+
+**Source.** [`src/threads.cc:57`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.cc#L57) · [`src/threads.cc:169`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.cc#L169). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-choose-schedule"></a>
+
+##### 3. Select runtime schedule ICV
+
+**Component.** omp_set_schedule and initializeLoops. omp_set_schedule stores the mapped schedule and chunk in the current team. Runtime initialization reads OMP_SCHEDULE when present, maps recognized names, and warns then uses static for an unknown name.
+
+**Techniques at this step.** [Team-scoped runtime schedule selection](#technique-team-runtime-schedule) · [Environment schedule parsing and fallback](#technique-schedule-environment-fallback).
+
+**Source.** [`src/entrypoints.cc:61`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/entrypoints.cc#L61) · [`src/loops.cc:132`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L132) · [`src/loops.cc:59`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L59). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-initialize-descriptor"></a>
+
+##### 4. Initialize shared loop descriptor
+
+**Component.** initDynamicLoop and computeDynamicLoopParams. The first team thread to claim an uninitialized descriptor resolves runtime and auto schedules, canonicalizes bounds, resets FAC2 state, and publishes initialization. Other threads yield until publication; each then sets any thread-local static chunk state.
+
+**Techniques at this step.** [Team-scoped runtime schedule selection](#technique-team-runtime-schedule) · [Descriptor-local scheduler lifecycle](#technique-descriptor-local-lifecycle).
+
+**Source.** [`src/loops.cc:333`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L333) · [`src/loops.cc:233`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L233) · [`src/loops.h:388`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.h#L388). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-dispatch-selection"></a>
+
+##### 5. Choose dispatch function
+
+**Component.** dynamicLoop::setSchedule. The resolved schedule installs the static, chunked-static, guided, FAC2, monotonic dynamic, or nonmonotonic dispatch function. Unsupported values call fatalError.
+
+**Techniques at this step.** [Dynamic claims with compare-and-swap](#technique-dynamic-atomic-claims) · [Guided claims that shrink with remaining work](#technique-guided-claims) · [Factoring-2 batch claims](#technique-fac2-batch-claims) · [Nonmonotonic dynamic work stealing](#technique-nonmonotonic-work-stealing) · [Static blocked and cyclic partitioning](#technique-static-block-cyclic-partition).
+
+**Source.** [`src/loops.cc:712`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L712). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-static-dispatch"></a>
+
+##### 6. Assign static iteration ranges
+
+**Component.** canonicalLoop::forStaticInit and static dispatchers. Unchunked static work obtains its canonical blocked range once per thread. Chunked static advances through cyclic chunk indices by the team size and returns false when a thread's next chunk is beyond the iteration count.
+
+**Techniques at this step.** [Static blocked and cyclic partitioning](#technique-static-block-cyclic-partition).
+
+**Source.** [`src/loops.cc:140`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L140) · [`src/loops.cc:470`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L470). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-dynamic-claims"></a>
+
+##### 7. Claim dynamic or guided ranges
+
+**Component.** dynamicLoop::dispatchMonotonic and dispatchGuided. Monotonic dynamic claims one canonical iteration with compare-and-swap and yields after a failed claim. Guided computes a shrinking share from remaining iterations, caps at the end, and retries failed compare-and-swap claims.
+
+**Techniques at this step.** [Dynamic claims with compare-and-swap](#technique-dynamic-atomic-claims) · [Guided claims that shrink with remaining work](#technique-guided-claims).
+
+**Source.** [`src/loops.cc:556`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L556) · [`src/loops.cc:497`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L497). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-fac2-claim"></a>
+
+##### 8. Claim FAC2 batch under descriptor lock
+
+**Component.** fac2Scheduler::next and dispatchFac2. The descriptor mutex protects end detection, batch-size calculation, the next index, and claim count. Each batch uses the ceiling of remaining work divided by twice the worker count, bounded by minimum chunk and remaining iterations.
+
+**Techniques at this step.** [Factoring-2 batch claims](#technique-fac2-batch-claims) · [Mutex-serialized FAC2 claims](#technique-fac2-serialized-claims) · [Descriptor-local scheduler lifecycle](#technique-descriptor-local-lifecycle).
+
+**Source.** [`src/fac2.h:39`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/fac2.h#L39) · [`src/loops.cc:536`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L536). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-nonmonotonic-steal"></a>
+
+##### 9. Take local work or steal a peer range
+
+**Component.** dispatchNonmonotonic and contiguousWork. A thread first increments its local base; if no local iterations remain and the loop is unfinished, it probes another thread's range and attempts a half-range steal. Failed claims report no iterations or continue probing according to the dispatch loop.
+
+**Techniques at this step.** [Nonmonotonic dynamic work stealing](#technique-nonmonotonic-work-stealing).
+
+**Source.** [`src/loops.cc:583`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L583) · [`src/loops.cc:759`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L759) · [`src/loops.cc:819`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L819). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-end-loop"></a>
+
+##### 10. Retire descriptor for this thread
+
+**Component.** __kmpc_dispatch_next and Thread::endDynamicLoop. When the selected dispatch function reports no iterations, the compiler ABI calls endDynamicLoop so the thread advances its dynamic-loop state and the descriptor can be reused after the team completes its users.
+
+**Techniques at this step.** [Descriptor-local scheduler lifecycle](#technique-descriptor-local-lifecycle) · [Compiler ABI dispatch](#technique-compiler-abi-dispatch).
+
+**Source.** [`src/loops.cc:896`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/loops.cc#L896) · [`src/threads.h:265`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.h#L265). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-team-barrier"></a>
+
+##### 11. Synchronize team arrivals
+
+**Component.** Barrier::newBarrier, fixedTreeCheckIn, and LBWBroadcast. The configured barrier implementation checks workers into its tree and releases them through broadcast flags. The fork join path uses checkIn after the master body; nowait loop completion omits its end barrier.
+
+**Techniques at this step.** [Tree check-in with flag broadcast](#technique-tree-checkin-flag-broadcast).
+
+**Source.** [`src/threads.cc:373`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.cc#L373) · [`src/barrier_impl.cc:538`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/barrier_impl.cc#L538) · [`src/barrier_impl.cc:142`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/barrier_impl.cc#L142). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-reduction"></a>
+
+##### 12. Select and complete reduction method
+
+**Component.** Thread::chooseReduction, enterReduction, and leaveReduction. Reduction entry chooses compiler-supported atomic combination or enters the runtime critical lock. Leave releases a used lock and performs the team barrier for the non-nowait form; unsupported forced modes follow the coded warning and fallback.
+
+**Techniques at this step.** [Compiler-selected atomic or critical reduction](#technique-compiler-selected-reduction).
+
+**Source.** [`src/threads.cc:434`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.cc#L434) · [`src/threads.cc:467`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.cc#L467) · [`src/threads.cc:494`](https://github.com/STEVVVU/openmp-runtime/blob/main/src/threads.cc#L494). [Back to execution flow](#execution-flow).
+
+<a id="flow-step-fac2-consumer"></a>
+
+##### 13. Check FAC2 coverage and reduction
+
+**Component.** tests/test_fac2.cc main. The consumer selects FAC2 through the runtime API, checks the returned schedule, runs parallel loops that record exact iteration coverage and reduction results, and exercises reuse of loop descriptors. This verifies runtime behavior; it is not a production dispatch stage.
+
+**Techniques at this step.** [Exact-coverage FAC2 checks](#technique-fac2-exact-coverage-checks).
+
+**Source.** [`tests/test_fac2.cc:23`](https://github.com/STEVVVU/openmp-runtime/blob/main/tests/test_fac2.cc#L23). [Back to execution flow](#execution-flow).
+
+<details>
+<summary>Scope and subsystem coverage</summary>
+
+Clang compiler ABI parallel entry, persistent team, team schedule ICV and environment selection, static and dynamic/guided/FAC2/nonmonotonic loop dispatch, descriptor lifecycle, barriers, reductions, and FAC2 consumer checks.
+
+- **Compiler ABI and parallel team.** The ABI packs and publishes outlined work to the persistent team, with nested parallelism rejected. [Step 1](#flow-step-abi-fork), [Step 2](#flow-step-team-workers).
+- **Runtime schedule configuration.** Team ICV and OMP_SCHEDULE parsing feed resolved descriptor scheduling state. [Step 3](#flow-step-choose-schedule), [Step 4](#flow-step-initialize-descriptor).
+- **Static worksharing.** Blocked and cyclic static partition routines assign canonical ranges. [Step 6](#flow-step-static-dispatch).
+- **Dynamic worksharing.** Dispatch callback selection covers dynamic, guided, FAC2, stealing and per-thread descriptor completion. [Step 5](#flow-step-dispatch-selection), [Step 7](#flow-step-dynamic-claims), [Step 8](#flow-step-fac2-claim), [Step 9](#flow-step-nonmonotonic-steal), [Step 10](#flow-step-end-loop).
+- **FAC2 correctness consumer.** The dedicated consumer checks exact iteration coverage, reduction, and descriptor reuse. [Step 13](#flow-step-fac2-consumer).
+- **Team synchronization and reduction.** The runtime supplies tree check-in/broadcast barriers and compiler-selected atomic or critical reduction coordination. [Step 11](#flow-step-team-barrier), [Step 12](#flow-step-reduction).
+
+Outside this flow audit:
+
+- `README.upstream.md`. Preserved upstream reference is not executable runtime behavior.
+- `examples/`. Demonstrations are outside the active ABI/FAC2 consumer path.
+- `src/tasking.cc`. Task queue behavior is outside the assigned parallel team and loop schedule scope.
+
+</details>
+
+<!-- execution-flow:end -->
+
+<details>
+<summary>Subsystem technique index</summary>
+
 ### Subsystem map
 
 Select a subsystem in the diagram to open its techniques, tradeoffs, and code references. The numbered links provide the same navigation. This map groups components; the execution diagrams show their runtime flow.
@@ -43,6 +365,8 @@ flowchart LR
 LOMP implements a compiler-facing subset of the LLVM OpenMP runtime ABI. The inherited runtime supplies teams, synchronization, tasks, reductions and ordinary loop schedules. This repository adds [FAC2](#fac2-batch) through the existing [runtime-schedule](#runtime-schedule) path. It does not claim complete OpenMP compliance.
 
 The compiler calls exported [ABI](#compiler-abi) entry points. Team state selects the runtime schedule, and a [loop descriptor](#loop-descriptor) tracks iteration claims. FAC2's descriptor-local state batches claims, while other schedules keep their existing implementation.
+
+</details>
 
 <details>
 <summary>Expand flow diagram 1</summary>
